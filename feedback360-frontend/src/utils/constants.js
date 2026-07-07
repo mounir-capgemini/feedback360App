@@ -1,0 +1,16 @@
+export const API_BASE_URL = 'http://localhost:8080';
+
+export const USER_ROLE = {
+  ADMIN: 'ADMIN',
+  PARTICIPANT: 'PARTICIPANT'
+};
+
+export const NOTIFICATION_TYPE = {
+  FEEDBACK_REQUEST: 'FEEDBACK_REQUEST',
+  REMINDER: 'REMINDER'
+};
+
+export const FEEDBACK_STATUS = {
+  EN_ATTENTE: 'EN_ATTENTE',
+  SOUMIS: 'SOUMIS'
+};
