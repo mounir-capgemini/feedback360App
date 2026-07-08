@@ -64,14 +64,14 @@ public class FeedbackService {
                 });
 
         // Créer une notification de confirmation de feedback
+        @SuppressWarnings("null")
         Notification notification = Notification.builder()
                 .user(currentUser)
                 .message("Votre feedback pour la session '" + session.getName() + "' a bien été enregistré.")
                 .type(NotificationType.REMINDER)
                 .status(NotificationStatus.PENDING)
                 .build();
-        Notification savedNotification = notificationRepository.save(notification);
-        Objects.requireNonNull(savedNotification, "Saved notification must not be null");
+        notificationRepository.save(notification);
 
         return feedbackMapper.toDTO(feedback);
     }
