@@ -18,7 +18,7 @@ import {
 import { ArrowBack as BackIcon, Send as SendIcon } from '@mui/icons-material';
 
 const FeedbackPage = () => {
-  const { sessionId } = useParams();
+  const { formationId: sessionId } = useParams();
   const navigate = useNavigate();
   const [session, setSession] = useState(null);
   const [loadingSession, setLoadingSession] = useState(true);

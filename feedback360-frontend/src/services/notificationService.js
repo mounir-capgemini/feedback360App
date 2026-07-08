@@ -15,5 +15,11 @@ export const notificationService = {
   markAsRead: async (id) => {
     const response = await api.patch(`/api/notifications/${id}/read`);
     return response.data;
-  }
+  },
+
+  getAllNotifications: async (page = 0, size = 10) => {
+    const params = { page, size };
+    const response = await api.get('/api/notifications/all', { params });
+    return response.data;
+  },
 };

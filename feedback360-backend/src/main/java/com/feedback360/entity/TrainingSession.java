@@ -46,6 +46,11 @@ public class TrainingSession {
     @JoinColumn(name = "population_id")
     private Population population;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    private String trainer;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

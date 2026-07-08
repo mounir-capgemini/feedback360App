@@ -59,10 +59,17 @@ public class SecurityConfig {
                         // Endpoints publics
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/talentup/**").permitAll()
+                        .requestMatchers("/api/sessions/public").permitAll()
                         // Swagger
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**").permitAll()
-                        // Dashboard stats — admin uniquement
-                        .requestMatchers("/api/dashboard/**").hasRole("ADMIN")
+                        // Dashboard — séparé par rôle
+                        .requestMatchers("/api/dashboard/statistics").hasRole("ADMIN")
+                        .requestMatchers("/api/dashboard/participant").hasRole("PARTICIPANT")
+                        // Admin-only endpoints
+                        .requestMatchers("/api/users/profile").hasAnyRole("ADMIN", "PARTICIPANT")
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/feedback/all").hasRole("ADMIN")
+                        .requestMatchers("/api/notifications/all").hasRole("ADMIN")
                         // Tout le reste nécessite une authentification
                         .anyRequest().authenticated()
                 );

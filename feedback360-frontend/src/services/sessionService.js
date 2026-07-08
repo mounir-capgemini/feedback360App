@@ -18,5 +18,16 @@ export const sessionService = {
   getSessionById: async (id) => {
     const response = await api.get(`/api/sessions/${id}`);
     return response.data;
+  },
+
+  getMySessions: async () => {
+    const response = await api.get('/api/sessions/my');
+    return response.data;
+  },
+
+  getPublicSessions: async (page = 0, size = 10) => {
+    const params = { page, size };
+    const response = await api.get('/api/sessions/public', { params });
+    return response.data;
   }
 };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
 import { authService } from '../services/authService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -18,6 +18,7 @@ import {
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -46,12 +47,9 @@ const LoginPage = () => {
       setToastMessage('Connexion réussie !');
       setShowToast(true);
 
+      const from = location.state?.from?.pathname || (res.role === 'ADMIN' ? '/admin/dashboard' : '/formations');
       setTimeout(() => {
-        if (res.role === 'ADMIN') {
-          navigate('/admin');
-        } else {
-          navigate('/');
-        }
+        navigate(from, { replace: true });
       }, 1000);
     } catch (err) {
       console.error(err);

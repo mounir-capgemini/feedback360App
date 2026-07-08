@@ -18,9 +18,12 @@ import {
 } from '@mui/material';
 import { CheckCircle as CheckIcon, Notifications as NotificationsIcon } from '@mui/icons-material';
 import { notificationService } from '../services/notificationService';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { USER_ROLE } from '../utils/constants';
 
 const NotificationsPage = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +36,10 @@ const NotificationsPage = () => {
 
   const fetchNotifications = async () => {
     try {
-      const data = await notificationService.getMyNotifications(page, rowsPerPage);
+      const isAdmin = user?.role === USER_ROLE.ADMIN;
+      const data = isAdmin
+        ? await notificationService.getAllNotifications(page, rowsPerPage)
+        : await notificationService.getMyNotifications(page, rowsPerPage);
       setNotifications(data.content || []);
       setTotalElements(data.totalElements || 0);
     } catch (err) {

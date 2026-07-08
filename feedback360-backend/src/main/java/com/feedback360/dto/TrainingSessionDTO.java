@@ -22,6 +22,8 @@ public class TrainingSessionDTO {
     private Long parcoursId;
     private String populationName;
     private Long populationId;
+    private String description;
+    private String trainer;
     private LocalDateTime createdAt;
     private long feedbackCount;
     private long pendingFeedbackCount;

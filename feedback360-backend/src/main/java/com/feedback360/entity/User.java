@@ -37,9 +37,12 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20)")
     @Builder.Default
     private Role role = Role.PARTICIPANT;
+
+    @Column(name = "photo", columnDefinition = "TEXT")
+    private String photo;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default

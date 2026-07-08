@@ -1,10 +1,13 @@
 package com.feedback360.service;
 
 import com.feedback360.dto.DashboardStatsDTO;
+import com.feedback360.dto.ParticipantDashboardStatsDTO;
+import com.feedback360.entity.Feedback;
 import com.feedback360.entity.FeedbackStatus;
 import com.feedback360.entity.NotificationStatus;
 import com.feedback360.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ public class DashboardService {
     private final TrainingSessionRepository sessionRepository;
     private final FeedbackRepository feedbackRepository;
     private final NotificationRepository notificationRepository;
+    private final SuiviFeedbackRepository suiviFeedbackRepository;
 
     /**
      * Calcule les statistiques globales pour le dashboard admin.
@@ -73,5 +77,44 @@ public class DashboardService {
         stats.setMonthlyFeedbacks(monthlyFeedbacks);
 
         return stats;
+    }
+
+    /**
+     * Calcule les statistiques pour le dashboard participant.
+     */
+    public ParticipantDashboardStatsDTO getParticipantStatistics(Long userId) {
+        long totalSessions = suiviFeedbackRepository.findByUserId(userId).size();
+        
+        long submitted = feedbackRepository.findByUserId(userId, Pageable.unpaged()).getTotalElements();
+        
+        long pending = suiviFeedbackRepository.findByUserId(userId).stream()
+                .filter(sf -> sf.getStatus() == FeedbackStatus.EN_ATTENTE)
+                .count();
+
+        List<ParticipantDashboardStatsDTO.MonthlyFeedbackStat> monthlyFeedbacks = new ArrayList<>();
+        
+        List<Feedback> userFeedbacks = feedbackRepository.findByUserId(userId, Pageable.unpaged()).getContent();
+        java.util.Map<String, Long> monthlyCounts = new java.util.TreeMap<>();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM");
+        for (Feedback f : userFeedbacks) {
+            if (f.getCreatedAt() != null) {
+                String monthKey = f.getCreatedAt().format(formatter);
+                monthlyCounts.put(monthKey, monthlyCounts.getOrDefault(monthKey, 0L) + 1L);
+            }
+        }
+        
+        for (java.util.Map.Entry<String, Long> entry : monthlyCounts.entrySet()) {
+            monthlyFeedbacks.add(ParticipantDashboardStatsDTO.MonthlyFeedbackStat.builder()
+                    .month(entry.getKey())
+                    .count(entry.getValue())
+                    .build());
+        }
+
+        return ParticipantDashboardStatsDTO.builder()
+                .totalSessions(totalSessions)
+                .submittedFeedbacks(submitted)
+                .pendingFeedbacks(pending)
+                .monthlyFeedbacks(monthlyFeedbacks)
+                .build();
     }
 }

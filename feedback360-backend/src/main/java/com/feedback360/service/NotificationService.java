@@ -52,4 +52,29 @@ public class NotificationService {
                     notificationRepository.save(notification);
                 });
     }
+
+    /**
+     * Récupère toutes les notifications (Admin uniquement).
+     */
+    public Page<NotificationDTO> getAllNotifications(Pageable pageable) {
+        Pageable safePageable = Objects.requireNonNull(pageable, "Pageable must not be null");
+        return notificationRepository.findAll(safePageable).map(notificationMapper::toDTO);
+    }
+
+    /**
+     * Marque une notification comme envoyée (vérifie la propriété de l'utilisateur avant de marquer).
+     */
+    @Transactional
+    public void markAsSent(Long notificationId, Long currentUserId) {
+        Long safeNotificationId = Objects.requireNonNull(notificationId, "Notification id must not be null");
+        Long safeUserId = Objects.requireNonNull(currentUserId, "Current user id must not be null");
+        notificationRepository.findById(safeNotificationId)
+                .ifPresent(notification -> {
+                    if (!notification.getUser().getId().equals(safeUserId)) {
+                        throw new SecurityException("Non autorisé à modifier cette notification");
+                    }
+                    notification.setStatus(NotificationStatus.SENT);
+                    notificationRepository.save(notification);
+                });
+    }
 }

@@ -78,8 +78,8 @@ const SessionDetailPage = () => {
     return (
       <Box>
         <Alert severity="error">{error || 'Session introuvable'}</Alert>
-        <Button startIcon={<BackIcon />} onClick={() => navigate('/sessions')} sx={{ mt: 2 }}>
-          Retour aux sessions
+        <Button startIcon={<BackIcon />} onClick={() => navigate('/formations')} sx={{ mt: 2 }}>
+          Retour aux formations
         </Button>
       </Box>
     );
@@ -87,7 +87,7 @@ const SessionDetailPage = () => {
 
   return (
     <Box className="animate-fade-in" sx={{ color: '#f3f4f6' }}>
-      <Button startIcon={<BackIcon />} onClick={() => navigate('/sessions')} sx={{ color: '#818cf8', mb: 3 }}>
+      <Button startIcon={<BackIcon />} onClick={() => navigate(-1)} sx={{ color: '#818cf8', mb: 3 }}>
         Retour à la liste
       </Button>
 
@@ -109,6 +109,12 @@ const SessionDetailPage = () => {
                   <Typography variant="caption" color="text.secondary">Type</Typography>
                   <Typography variant="body1" sx={{ fontWeight: 600 }}>{session.typeLabel || 'N/A'}</Typography>
                 </Box>
+                {session.trainer && (
+                  <Box>
+                    <Typography variant="caption" color="text.secondary">Formateur</Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 600 }}>{session.trainer}</Typography>
+                  </Box>
+                )}
                 <Box>
                   <Typography variant="caption" color="text.secondary">Parcours</Typography>
                   <Typography variant="body1" sx={{ fontWeight: 600 }}>{session.parcoursName || 'N/A'}</Typography>
@@ -117,6 +123,14 @@ const SessionDetailPage = () => {
                   <Typography variant="caption" color="text.secondary">Population</Typography>
                   <Typography variant="body1" sx={{ fontWeight: 600 }}>{session.populationName || 'N/A'}</Typography>
                 </Box>
+                {session.description && (
+                  <Box>
+                    <Typography variant="caption" color="text.secondary">Description</Typography>
+                    <Typography variant="body2" sx={{ color: '#475569', lineHeight: 1.6, mt: 0.5 }}>
+                      {session.description}
+                    </Typography>
+                  </Box>
+                )}
                 <Box>
                   <Typography variant="caption" color="text.secondary">Importé le</Typography>
                   <Typography variant="body1" sx={{ fontWeight: 600 }}>

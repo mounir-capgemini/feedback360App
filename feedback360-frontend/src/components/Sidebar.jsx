@@ -1,6 +1,14 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Box, Divider } from '@mui/material';
-import { Dashboard as DashboardIcon, School as SchoolIcon, RateReview as FeedbackIcon, Notifications as NotificationsIcon, BarChart as ChartIcon } from '@mui/icons-material';
+import {
+  Dashboard as DashboardIcon,
+  School as SchoolIcon,
+  RateReview as FeedbackIcon,
+  Notifications as NotificationsIcon,
+  BarChart as ChartIcon,
+  People as PeopleIcon,
+  Person as PersonIcon
+} from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
@@ -22,15 +30,19 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
     const items = [];
 
     if (user?.role === 'ADMIN') {
-      items.push({ text: 'Dashboard Admin', icon: <DashboardIcon />, path: '/admin' });
+      items.push({ text: 'Dashboard Admin', icon: <DashboardIcon />, path: '/admin/dashboard' });
+      items.push({ text: 'Utilisateurs', icon: <PeopleIcon />, path: '/admin/users' });
+      items.push({ text: 'Sessions de formation', icon: <SchoolIcon />, path: '/admin/formations' });
+      items.push({ text: 'Historique Feedbacks', icon: <FeedbackIcon />, path: '/admin/feedbacks' });
       items.push({ text: 'Statistiques', icon: <ChartIcon />, path: '/statistics' });
+      items.push({ text: 'Notifications', icon: <NotificationsIcon />, path: '/admin/notifications' });
     } else {
-      items.push({ text: 'Dashboard', icon: <DashboardIcon />, path: '/' });
+      items.push({ text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' });
+      items.push({ text: 'Mes Formations', icon: <SchoolIcon />, path: '/formations' });
       items.push({ text: 'Mes Feedbacks', icon: <FeedbackIcon />, path: '/my-feedbacks' });
+      items.push({ text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' });
+      items.push({ text: 'Mon Profil', icon: <PersonIcon />, path: '/profile' });
     }
-
-    items.push({ text: 'Liste des sessions', icon: <SchoolIcon />, path: '/sessions' });
-    items.push({ text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' });
 
     return items;
   };

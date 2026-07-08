@@ -16,5 +16,16 @@ export const feedbackService = {
     const params = { page, size };
     const response = await api.get('/api/feedback/my', { params });
     return response.data;
+  },
+
+  getAllFeedbacks: async (page = 0, size = 10) => {
+    const params = { page, size };
+    const response = await api.get('/api/feedback/all', { params });
+    return response.data;
+  },
+
+  exportFeedbacks: async () => {
+    const response = await api.get('/api/feedback/export', { responseType: 'blob' });
+    return response.data;
   }
 };

@@ -15,11 +15,22 @@ import StatisticsPage from '../pages/StatisticsPage';
 import PrivateRoute from '../components/PrivateRoute';
 import { USER_ROLE } from '../utils/constants';
 
+// Nouvelles pages
+import LandingPage from '../pages/LandingPage';
+import ProfilePage from '../pages/ProfilePage';
+import AdminUsersPage from '../pages/AdminUsersPage';
+import AdminFeedbacksPage from '../pages/AdminFeedbacksPage';
+import UnauthorizedPage from '../pages/UnauthorizedPage';
+
 const AppRoutes = () => {
   const { user, isAuthenticated } = useAuth();
 
   return (
     <Routes>
+      {/* Page d'accueil publique */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
       {/* Routes d'authentification publiques */}
       <Route element={<AuthLayout />}>
         <Route
@@ -27,12 +38,26 @@ const AppRoutes = () => {
           element={
             isAuthenticated() ? (
               user?.role === USER_ROLE.ADMIN ? (
-                <Navigate to="/admin" replace />
+                <Navigate to="/admin/dashboard" replace />
               ) : (
-                <Navigate to="/" replace />
+                <Navigate to="/formations" replace />
               )
             ) : (
               <LoginPage />
+            )
+          }
+        />
+        <Route
+          path="/admin/login"
+          element={
+            isAuthenticated() ? (
+              user?.role === USER_ROLE.ADMIN ? (
+                <Navigate to="/admin/dashboard" replace />
+              ) : (
+                <Navigate to="/formations" replace />
+              )
+            ) : (
+              <LoginPage isAdminFlow={true} />
             )
           }
         />
@@ -40,26 +65,89 @@ const AppRoutes = () => {
 
       {/* Routes protégées sous le MainLayout */}
       <Route element={<MainLayout />}>
-        {/* Page d'accueil / Tableau de bord participant */}
+        {/* Dashboard Participant connecté */}
         <Route
-          path="/"
+          path="/dashboard"
+          element={
+            <PrivateRoute requiredRole={USER_ROLE.PARTICIPANT}>
+              <DashboardParticipant />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Espace Participant connecté */}
+        <Route
+          path="/formations"
+          element={
+            <PrivateRoute requiredRole={USER_ROLE.PARTICIPANT}>
+              <SessionListPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/formations/:id"
           element={
             <PrivateRoute>
-              {user?.role === USER_ROLE.ADMIN ? (
-                <Navigate to="/admin" replace />
-              ) : (
-                <DashboardParticipant />
-              )}
+              <SessionDetailPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/feedback/:formationId"
+          element={
+            <PrivateRoute requiredRole={USER_ROLE.PARTICIPANT}>
+              <FeedbackPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/my-feedbacks"
+          element={
+            <PrivateRoute requiredRole={USER_ROLE.PARTICIPANT}>
+              <MyFeedbacksPage />
             </PrivateRoute>
           }
         />
 
         {/* Dashboard Admin (admin uniquement) */}
         <Route
-          path="/admin"
+          path="/admin/dashboard"
           element={
             <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
               <DashboardAdmin />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Utilisateurs (admin uniquement) */}
+        <Route
+          path="/admin/users"
+          element={
+            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
+              <AdminUsersPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Sessions / Formations (admin uniquement) */}
+        <Route
+          path="/admin/formations"
+          element={
+            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
+              <SessionListPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Historique des Feedbacks (admin uniquement) */}
+        <Route
+          path="/admin/feedbacks"
+          element={
+            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
+              <AdminFeedbacksPage />
             </PrivateRoute>
           }
         />
@@ -74,51 +162,32 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Sessions (tous rôles) */}
+        {/* Notifications (admin uniquement) */}
         <Route
-          path="/sessions"
+          path="/admin/notifications"
           element={
-            <PrivateRoute>
-              <SessionListPage />
+            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
+              <NotificationsPage />
             </PrivateRoute>
           }
         />
 
-        <Route
-          path="/sessions/:id"
-          element={
-            <PrivateRoute>
-              <SessionDetailPage />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Mes feedbacks (tous rôles authentifiés) */}
-        <Route
-          path="/my-feedbacks"
-          element={
-            <PrivateRoute>
-              <MyFeedbacksPage />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Donner un feedback (participant uniquement) */}
-        <Route
-          path="/feedback/:sessionId"
-          element={
-            <PrivateRoute requiredRole={USER_ROLE.PARTICIPANT}>
-              <FeedbackPage />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Notifications (tous rôles) */}
+        {/* Notifications (tous rôles authentifiés) */}
         <Route
           path="/notifications"
           element={
             <PrivateRoute>
               <NotificationsPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Profil utilisateur (tous rôles authentifiés) */}
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <ProfilePage />
             </PrivateRoute>
           }
         />

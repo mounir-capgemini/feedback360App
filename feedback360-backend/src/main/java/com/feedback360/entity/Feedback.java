@@ -29,7 +29,7 @@ public class Feedback {
     private Integer rating;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20)")
     @Builder.Default
     private FeedbackStatus status = FeedbackStatus.EN_ATTENTE;
 

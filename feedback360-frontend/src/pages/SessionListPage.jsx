@@ -18,13 +18,16 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import { Search as SearchIcon, Visibility as ViewIcon } from '@mui/icons-material';
+import { Search as SearchIcon, Visibility as ViewIcon, RateReview as ReviewIcon } from '@mui/icons-material';
 import { sessionService } from '../services/sessionService';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const SessionListPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [sessions, setSessions] = useState([]);
+  const [allParticipantSessions, setAllParticipantSessions] = useState([]); // stocke toutes les sessions pour le filtrage local
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -36,13 +39,21 @@ const SessionListPage = () => {
   const [sortDir, setSortDir] = useState('desc');
   const [search, setSearch] = useState('');
 
+  const isAdmin = user?.role === 'ADMIN';
+
   useEffect(() => {
     const fetchSessions = async () => {
       setLoading(true);
       try {
-        const data = await sessionService.getSessions(page, rowsPerPage, sortBy, sortDir, search);
-        setSessions(data.content || []);
-        setTotalElements(data.totalElements || 0);
+        if (isAdmin) {
+          const data = await sessionService.getSessions(page, rowsPerPage, sortBy, sortDir, search);
+          setSessions(data.content || []);
+          setTotalElements(data.totalElements || 0);
+        } else {
+          // Participant: charger toutes ses sessions assignées, puis paginer/filtrer en local
+          const data = await sessionService.getMySessions();
+          setAllParticipantSessions(data || []);
+        }
       } catch (err) {
         console.error(err);
         setError('Impossible de récupérer la liste des sessions de formation.');
@@ -51,12 +62,51 @@ const SessionListPage = () => {
       }
     };
 
-    const delayDebounceFn = setTimeout(() => {
+    if (isAdmin) {
+      const delayDebounceFn = setTimeout(() => {
+        fetchSessions();
+      }, 300); // Debounce pour la recherche
+      return () => clearTimeout(delayDebounceFn);
+    } else {
       fetchSessions();
-    }, 300); // Debounce pour la recherche
+    }
+  }, [page, rowsPerPage, sortBy, sortDir, search, isAdmin]);
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [page, rowsPerPage, sortBy, sortDir, search]);
+  // Filtrage et tri local pour le participant
+  useEffect(() => {
+    if (!isAdmin) {
+      let filtered = [...allParticipantSessions];
+
+      // Recherche
+      if (search.trim()) {
+        const query = search.toLowerCase();
+        filtered = filtered.filter(
+          s =>
+            (s.name && s.name.toLowerCase().includes(query)) ||
+            (s.typeLabel && s.typeLabel.toLowerCase().includes(query)) ||
+            (s.parcoursName && s.parcoursName.toLowerCase().includes(query))
+        );
+      }
+
+      // Tri
+      filtered.sort((a, b) => {
+        let valA = a[sortBy];
+        let valB = b[sortBy];
+
+        if (sortBy === 'createdAt') {
+          valA = new Date(a.createdAt || 0);
+          valB = new Date(b.createdAt || 0);
+        }
+
+        if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+        if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      setTotalElements(filtered.length);
+      setSessions(filtered.slice(page * rowsPerPage, (page + 1) * rowsPerPage));
+    }
+  }, [allParticipantSessions, search, sortBy, sortDir, page, rowsPerPage, isAdmin]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -81,7 +131,7 @@ const SessionListPage = () => {
   return (
     <Box className="animate-fade-in" sx={{ color: '#0f172a' }}>
       <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'Outfit', mb: 3 }} className="gradient-text">
-        Sessions de formation
+        {isAdmin ? 'Sessions de formation' : 'Mes Formations'}
       </Typography>
 
       {/* Barre de recherche */}
@@ -89,23 +139,22 @@ const SessionListPage = () => {
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Rechercher par nom de session, module ou type..."
+          placeholder="Rechercher par nom de session, parcours ou type..."
           value={search}
           onChange={handleSearchChange}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: '#818cf8' }} />
+                <SearchIcon sx={{ color: '#2563eb' }} />
               </InputAdornment>
             ),
-            style: { color: '#f3f4f6' },
           }}
           sx={{
             maxWidth: 500,
             '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
-              '&:hover fieldset': { borderColor: '#818cf8' },
-              '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+              '& fieldset': { borderColor: 'rgba(59,130,246,0.15)' },
+              '&:hover fieldset': { borderColor: '#2563eb' },
+              '&.Mui-focused fieldset': { borderColor: '#1d4ed8' },
             },
           }}
         />
@@ -124,39 +173,37 @@ const SessionListPage = () => {
         {!loading && (
           <TableContainer>
             <Table>
-              <TableHead>
-                <TableRow sx={{ borderBottom: '2px solid rgba(255,255,255,0.08)' }}>
-                  <TableCell sx={{ color: '#9ca3af', fontWeight: 600 }}>
+              <TableHead sx={{ bgcolor: 'rgba(241, 245, 249, 0.6)' }}>
+                <TableRow sx={{ borderBottom: '2px solid rgba(59,130,246,0.08)' }}>
+                  <TableCell sx={{ color: '#0f172a', fontWeight: 600 }}>
                     <TableSortLabel
                       active={sortBy === 'name'}
                       direction={sortBy === 'name' ? sortDir : 'asc'}
                       onClick={() => handleSort('name')}
-                      sx={{ color: '#9ca3af !important' }}
                     >
                       Nom de la Session
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell sx={{ color: '#9ca3af', fontWeight: 600 }}>Type</TableCell>
-                  <TableCell sx={{ color: '#9ca3af', fontWeight: 600 }}>Parcours</TableCell>
-                  <TableCell sx={{ color: '#9ca3af', fontWeight: 600 }}>Population</TableCell>
-                  <TableCell align="center" sx={{ color: '#9ca3af', fontWeight: 600 }}>
+                  <TableCell sx={{ color: '#0f172a', fontWeight: 600 }}>Type</TableCell>
+                  <TableCell sx={{ color: '#0f172a', fontWeight: 600 }}>Parcours</TableCell>
+                  <TableCell sx={{ color: '#0f172a', fontWeight: 600 }}>Population</TableCell>
+                  <TableCell align="center" sx={{ color: '#0f172a', fontWeight: 600 }}>
                     <TableSortLabel
                       active={sortBy === 'createdAt'}
                       direction={sortBy === 'createdAt' ? sortDir : 'asc'}
                       onClick={() => handleSort('createdAt')}
-                      sx={{ color: '#9ca3af !important' }}
                     >
                       Date d'import
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell align="center" sx={{ color: '#9ca3af', fontWeight: 600 }}>Feedbacks reçus</TableCell>
-                  <TableCell align="center" sx={{ color: '#9ca3af', fontWeight: 600 }}>Actions</TableCell>
+                  {isAdmin && <TableCell align="center" sx={{ color: '#0f172a', fontWeight: 600 }}>Feedbacks reçus</TableCell>}
+                  <TableCell align="center" sx={{ color: '#0f172a', fontWeight: 600 }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {sessions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} align="center" sx={{ color: '#9ca3af', py: 4 }}>
+                    <TableCell colSpan={isAdmin ? 7 : 6} align="center" sx={{ color: '#475569', py: 4 }}>
                       Aucune session trouvée.
                     </TableCell>
                   </TableRow>
@@ -165,29 +212,49 @@ const SessionListPage = () => {
                     <TableRow
                       key={session.id}
                       sx={{
-                        borderBottom: '1px solid rgba(255,255,255,0.05)',
-                        '&:hover': { bgcolor: 'rgba(255,255,255,0.01)' },
+                        borderBottom: '1px solid rgba(59,130,246,0.08)',
+                        '&:hover': { bgcolor: 'rgba(59,130,246,0.02)' },
                       }}
                     >
-                      <TableCell sx={{ color: '#f3f4f6', fontWeight: 600 }}>{session.name}</TableCell>
-                      <TableCell sx={{ color: '#d1d5db' }}>{session.typeLabel || 'N/A'}</TableCell>
-                      <TableCell sx={{ color: '#d1d5db' }}>{session.parcoursName || 'N/A'}</TableCell>
-                      <TableCell sx={{ color: '#d1d5db' }}>{session.populationName || 'N/A'}</TableCell>
-                      <TableCell align="center" sx={{ color: '#d1d5db' }}>
+                      <TableCell sx={{ color: '#0f172a', fontWeight: 600 }}>{session.name}</TableCell>
+                      <TableCell sx={{ color: '#334155' }}>{session.typeLabel || 'N/A'}</TableCell>
+                      <TableCell sx={{ color: '#334155' }}>{session.parcoursName || 'N/A'}</TableCell>
+                      <TableCell sx={{ color: '#334155' }}>{session.populationName || 'N/A'}</TableCell>
+                      <TableCell align="center" sx={{ color: '#334155' }}>
                         {new Date(session.createdAt).toLocaleDateString('fr-FR')}
                       </TableCell>
-                      <TableCell align="center" sx={{ color: '#f3f4f6', fontWeight: 700 }}>
-                        {session.feedbackCount}
-                      </TableCell>
+                      {isAdmin && (
+                        <TableCell align="center" sx={{ color: '#0f172a', fontWeight: 700 }}>
+                          {session.feedbackCount}
+                        </TableCell>
+                      )}
                       <TableCell align="center">
                         <Box display="flex" justifyContent="center" gap={1}>
-                          <IconButton
-                            color="primary"
-                            onClick={() => navigate(`/sessions/${session.id}`)}
-                            sx={{ color: '#818cf8' }}
-                          >
-                            <ViewIcon />
-                          </IconButton>
+                          {isAdmin ? (
+                            <IconButton
+                              color="primary"
+                              onClick={() => navigate(`/formations/${session.id}`)}
+                              sx={{ color: '#2563eb' }}
+                            >
+                              <ViewIcon />
+                            </IconButton>
+                          ) : (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              startIcon={<ReviewIcon />}
+                              onClick={() => navigate(`/feedback/${session.id}`)}
+                              sx={{
+                                borderRadius: 2,
+                                background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                                '&:hover': {
+                                  background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                                },
+                              }}
+                            >
+                              Donner avis
+                            </Button>
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>
@@ -208,9 +275,8 @@ const SessionListPage = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
           labelRowsPerPage="Lignes par page:"
           sx={{
-            color: '#9ca3af',
-            borderTop: '1px solid rgba(255,255,255,0.08)',
-            '.MuiTablePagination-selectIcon': { color: '#9ca3af' },
+            color: '#475569',
+            borderTop: '1px solid rgba(59,130,246,0.08)',
           }}
         />
       </Paper>

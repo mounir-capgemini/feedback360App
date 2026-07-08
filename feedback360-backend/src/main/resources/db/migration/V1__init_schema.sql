@@ -100,10 +100,10 @@ CREATE TABLE suivi_feedbacks (
 -- Données initiales
 -- =============================================
 
--- Admin par défaut (mot de passe: Admin123!)
--- BCrypt hash de "Admin123!"
+-- Admin par défaut (mot de passe: admin123)
+-- BCrypt hash de "admin123"
 INSERT INTO users (email, full_name, password, role, created_at) VALUES
-('admin@feedback360.com', 'Administrateur', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN', NOW());
+('admin@feedback360.com', 'Administrateur', '$2a$10$rXGvi0chghdgUXiEOSYtwumviNHxhfpV1YiUEYZbG/6Iah64Ua8ma', 'ADMIN', NOW());
 
 -- Parcours de démonstration
 INSERT INTO parcours (talent_up_parcours_id, name, created_at) VALUES

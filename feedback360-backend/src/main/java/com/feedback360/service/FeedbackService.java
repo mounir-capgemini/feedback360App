@@ -25,6 +25,7 @@ public class FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final TrainingSessionRepository sessionRepository;
     private final SuiviFeedbackRepository suiviFeedbackRepository;
+    private final NotificationRepository notificationRepository;
     private final FeedbackMapper feedbackMapper;
 
     /**
@@ -62,7 +63,25 @@ public class FeedbackService {
                     suiviFeedbackRepository.save(suivi);
                 });
 
+        // Créer une notification de confirmation de feedback
+        Notification notification = Notification.builder()
+                .user(currentUser)
+                .message("Votre feedback pour la session '" + session.getName() + "' a bien été enregistré.")
+                .type(NotificationType.REMINDER)
+                .status(NotificationStatus.PENDING)
+                .build();
+        Notification savedNotification = notificationRepository.save(notification);
+        Objects.requireNonNull(savedNotification, "Saved notification must not be null");
+
         return feedbackMapper.toDTO(feedback);
+    }
+
+    /**
+     * Récupère tous les feedbacks (Admin uniquement).
+     */
+    public Page<FeedbackDTO> getAllFeedbacks(Pageable pageable) {
+        Pageable safePageable = Objects.requireNonNull(pageable, "Pageable must not be null");
+        return feedbackRepository.findAll(safePageable).map(feedbackMapper::toDTO);
     }
 
     /**

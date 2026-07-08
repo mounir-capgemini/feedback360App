@@ -25,12 +25,12 @@ public class Notification {
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(30)")
     @Builder.Default
     private NotificationType type = NotificationType.FEEDBACK_REQUEST;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20)")
     @Builder.Default
     private NotificationStatus status = NotificationStatus.PENDING;
 

@@ -1,6 +1,8 @@
 package com.feedback360.controller;
 
 import com.feedback360.dto.TrainingSessionDTO;
+import com.feedback360.entity.User;
+import com.feedback360.service.AuthService;
 import com.feedback360.service.TrainingSessionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +12,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Contrôleur pour les sessions de formation.
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class TrainingSessionController {
 
     private final TrainingSessionService sessionService;
+    private final AuthService authService;
 
     @GetMapping
     @Operation(summary = "Lister toutes les sessions avec pagination, recherche et tri")
@@ -44,5 +50,22 @@ public class TrainingSessionController {
     @Operation(summary = "Détail d'une session par ID")
     public ResponseEntity<TrainingSessionDTO> getSessionById(@PathVariable Long id) {
         return ResponseEntity.ok(sessionService.getSessionById(id));
+    }
+
+    @GetMapping("/my")
+    @PreAuthorize("hasRole('PARTICIPANT')")
+    @Operation(summary = "Récupère les sessions assignées au participant connecté")
+    public ResponseEntity<List<TrainingSessionDTO>> getMySessionsAsParticipant() {
+        User currentUser = authService.getCurrentUser();
+        return ResponseEntity.ok(sessionService.getParticipantSessions(currentUser.getId()));
+    }
+
+    @GetMapping("/public")
+    @Operation(summary = "Récupère la liste publique des sessions (sans authentification)")
+    public ResponseEntity<Page<TrainingSessionDTO>> getPublicSessions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(sessionService.getPublicSessions(pageable));
     }
 }

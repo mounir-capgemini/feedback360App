@@ -20,6 +20,9 @@ public class SuiviFeedbackDTO {
     private Long userId;
     private String sessionName;
     private Long sessionId;
+    private String parcoursName;
+    private String populationName;
+    private String typeLabel;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

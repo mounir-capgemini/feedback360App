@@ -19,5 +19,6 @@ public class UserDTO {
     private String email;
     private String fullName;
     private Role role;
+    private String photo;
     private LocalDateTime createdAt;
 }
