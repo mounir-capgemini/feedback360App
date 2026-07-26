@@ -20,9 +20,12 @@ public class DashboardStatsDTO {
     private long totalNotifications;
     private long pendingNotifications;
     private double averageRating;
-    private java.util.List<SessionFeedbackStat> feedbacksBySession;
-    private java.util.List<RatingDistribution> ratingDistribution;
-    private java.util.List<MonthlyFeedback> monthlyFeedbacks;
+    @Builder.Default
+    private java.util.List<SessionFeedbackStat> feedbacksBySession = new java.util.ArrayList<>();
+    @Builder.Default
+    private java.util.List<RatingDistribution> ratingDistribution = new java.util.ArrayList<>();
+    @Builder.Default
+    private java.util.List<MonthlyFeedback> monthlyFeedbacks = new java.util.ArrayList<>();
 
     @Getter
     @Setter

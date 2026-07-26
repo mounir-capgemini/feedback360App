@@ -15,7 +15,7 @@ import {
   Snackbar,
 } from '@mui/material';
 
-const LoginPage = () => {
+const LoginPage = ({ isAdminFlow = false }) => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -47,9 +47,19 @@ const LoginPage = () => {
       setToastMessage('Connexion réussie !');
       setShowToast(true);
 
-      const from = location.state?.from?.pathname || (res.role === 'ADMIN' ? '/admin/dashboard' : '/formations');
+      let targetPath = location.state?.from?.pathname;
+      if (res.role === 'ADMIN') {
+        if (!targetPath || targetPath === '/formations' || targetPath === '/dashboard' || targetPath === '/my-feedbacks' || targetPath === '/unauthorized') {
+          targetPath = '/admin/dashboard';
+        }
+      } else {
+        if (!targetPath || targetPath.startsWith('/admin') || targetPath === '/unauthorized') {
+          targetPath = '/formations';
+        }
+      }
+
       setTimeout(() => {
-        navigate(from, { replace: true });
+        navigate(targetPath, { replace: true });
       }, 1000);
     } catch (err) {
       console.error(err);
@@ -89,18 +99,31 @@ const LoginPage = () => {
                 fontWeight: 800,
                 fontFamily: 'Outfit, sans-serif',
                 textAlign: 'center',
-                mb: 1,
+                mb: 0.5,
               }}
               className="gradient-text"
             >
               Feedback360
             </Typography>
             <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 700,
+                color: '#1e3a8a',
+                textAlign: 'center',
+                mb: 0.5,
+              }}
+            >
+              {isAdminFlow ? 'Espace Administrateur' : 'Espace Participant'}
+            </Typography>
+            <Typography
               variant="body2"
               color="text.secondary"
               textAlign="center"
             >
-              Connectez-vous pour donner ou consulter des feedbacks
+              {isAdminFlow
+                ? 'Connectez-vous pour gérer les formations et les feedbacks'
+                : 'Connectez-vous pour consulter et évaluer vos formations'}
             </Typography>
           </Box>
 
@@ -186,6 +209,28 @@ const LoginPage = () => {
               </Button>
             </Box>
           </form>
+
+          <Box display="flex" justifyContent="center" mt={2}>
+            {isAdminFlow ? (
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => navigate('/login')}
+                sx={{ textTransform: 'none', fontWeight: 600, color: '#2563eb' }}
+              >
+                Vous êtes participant ? Connexion participant
+              </Button>
+            ) : (
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => navigate('/admin/login')}
+                sx={{ textTransform: 'none', fontWeight: 600, color: '#2563eb' }}
+              >
+                Vous êtes administrateur ? Connexion admin
+              </Button>
+            )}
+          </Box>
         </CardContent>
       </Card>
 

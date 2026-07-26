@@ -33,7 +33,6 @@ public class FeedbackService {
      * Met à jour le SuiviFeedback correspondant en SOUMIS.
      */
     @Transactional
-    @SuppressWarnings("null")
     public FeedbackDTO createFeedback(FeedbackCreateDTO dto, User currentUser) {
         Long sessionId = Objects.requireNonNull(dto.getSessionId(), "Session id must not be null");
         Long userId = Objects.requireNonNull(currentUser.getId(), "User id must not be null");

@@ -40,6 +40,7 @@ class DefaultUserSeederTest {
     @SuppressWarnings("null")
     void shouldSeedDefaultAdminWhenNoUserExists() {
         when(userRepository.existsByEmail("admin@feedback360.com")).thenReturn(false);
+        when(userRepository.existsByEmail("participant@feedback360.com")).thenReturn(true);
         when(passwordEncoder.encode("admin123")).thenReturn("encoded-password");
 
         defaultUserSeeder.run(new DefaultApplicationArguments(new String[0]));

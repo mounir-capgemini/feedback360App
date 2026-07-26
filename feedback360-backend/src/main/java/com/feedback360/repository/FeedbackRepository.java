@@ -29,9 +29,9 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     @Query("SELECT f.rating, COUNT(f) FROM Feedback f GROUP BY f.rating ORDER BY f.rating")
     List<Object[]> findRatingDistribution();
 
-    @Query("SELECT FUNCTION('DATE_FORMAT', f.createdAt, '%Y-%m'), COUNT(f) " +
-           "FROM Feedback f GROUP BY FUNCTION('DATE_FORMAT', f.createdAt, '%Y-%m') " +
-           "ORDER BY FUNCTION('DATE_FORMAT', f.createdAt, '%Y-%m')")
+    @Query(value = "SELECT TO_CHAR(created_at, 'YYYY-MM') AS month, COUNT(*) AS count " +
+                   "FROM feedbacks GROUP BY TO_CHAR(created_at, 'YYYY-MM') " +
+                   "ORDER BY month", nativeQuery = true)
     List<Object[]> findMonthlyFeedbackCounts();
 
     @Query("SELECT f.trainingSession.name, COUNT(f), AVG(f.rating) " +

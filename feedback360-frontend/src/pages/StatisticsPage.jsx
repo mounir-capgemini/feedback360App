@@ -25,6 +25,23 @@ ChartJS.register(
   Legend
 );
 
+const FALLBACK_STATS = {
+  monthlyFeedbacks: [
+    { month: '2026-03', count: 8 },
+    { month: '2026-04', count: 15 },
+    { month: '2026-05', count: 22 },
+    { month: '2026-06', count: 18 },
+    { month: '2026-07', count: 27 },
+  ],
+  feedbacksBySession: [
+    { sessionName: 'Spring Boot 3', feedbackCount: 12, averageRating: 4.8 },
+    { sessionName: 'Design System', feedbackCount: 9, averageRating: 5.0 },
+    { sessionName: 'CI/CD & Kubernetes', feedbackCount: 7, averageRating: 4.5 },
+    { sessionName: 'Pipeline IA', feedbackCount: 11, averageRating: 4.9 },
+  ],
+  ratingDistribution: [],
+};
+
 const StatisticsPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +54,8 @@ const StatisticsPage = () => {
         setStats(data);
       } catch (err) {
         console.error(err);
-        setError('Impossible de charger les statistiques détaillées.');
+        setError('Statistiques API indisponibles — affichage des données exemples.');
+        setStats(FALLBACK_STATS);
       } finally {
         setLoading(false);
       }
@@ -51,10 +69,6 @@ const StatisticsPage = () => {
         <CircularProgress color="primary" />
       </Box>
     );
-  }
-
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
   }
 
   // 1. Chart Data: Monthly Trends
@@ -119,21 +133,30 @@ const StatisticsPage = () => {
 
   return (
     <Box className="animate-fade-in" sx={{ color: '#0f172a' }}>
-      <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'Outfit', mb: 3 }} className="gradient-text">
+      <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'Outfit', mb: 1 }} className="gradient-text">
         Analyses & Statistiques
       </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        Visualisez les tendances mensuelles et les performances de vos sessions de formation.
+      </Typography>
+
+      {error && (
+        <Alert severity="warning" sx={{ mb: 3, borderRadius: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <Grid container spacing={4}>
         {/* Graphique de tendance temporelle */}
         <Grid item xs={12} md={6}>
-          <Paper className="glass-panel" sx={{ p: 3, background: 'rgba(17, 25, 40, 0.5)' }}>
+          <Paper className="glass-panel" sx={{ p: 3, background: 'rgba(255, 255, 255, 0.92)' }}>
             <Line data={lineChartData} options={lineChartOptions} />
           </Paper>
         </Grid>
 
         {/* Notes moyennes par session */}
         <Grid item xs={12} md={6}>
-          <Paper className="glass-panel" sx={{ p: 3, background: 'rgba(17, 25, 40, 0.5)' }}>
+          <Paper className="glass-panel" sx={{ p: 3, background: 'rgba(255, 255, 255, 0.92)' }}>
             <Bar data={sessionBarData} options={sessionBarOptions} />
           </Paper>
         </Grid>

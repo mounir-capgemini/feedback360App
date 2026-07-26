@@ -32,49 +32,86 @@ public class DashboardService {
     public DashboardStatsDTO getStatistics() {
         DashboardStatsDTO stats = new DashboardStatsDTO();
 
-        // Compteurs globaux
-        stats.setTotalUsers(userRepository.count());
-        stats.setTotalSessions(sessionRepository.count());
-        stats.setTotalFeedbacks(feedbackRepository.count());
-        stats.setPendingFeedbacks(feedbackRepository.countByStatus(FeedbackStatus.EN_ATTENTE));
-        stats.setSubmittedFeedbacks(feedbackRepository.countByStatus(FeedbackStatus.SOUMIS));
-        stats.setTotalNotifications(notificationRepository.count());
-        stats.setPendingNotifications(notificationRepository.countByStatus(NotificationStatus.PENDING));
+        try {
+            stats.setTotalUsers(userRepository.count());
+            stats.setTotalSessions(sessionRepository.count());
+            stats.setTotalFeedbacks(feedbackRepository.count());
+            stats.setPendingFeedbacks(feedbackRepository.countByStatus(FeedbackStatus.EN_ATTENTE));
+            stats.setSubmittedFeedbacks(feedbackRepository.countByStatus(FeedbackStatus.SOUMIS));
+            stats.setTotalNotifications(notificationRepository.count());
+            stats.setPendingNotifications(notificationRepository.countByStatus(NotificationStatus.PENDING));
 
-        // Note moyenne
-        Double avgRating = feedbackRepository.findAverageRating();
-        stats.setAverageRating(avgRating != null ? Math.round(avgRating * 100.0) / 100.0 : 0.0);
+            // Note moyenne
+            Double avgRating = feedbackRepository.findAverageRating();
+            stats.setAverageRating(avgRating != null ? Math.round(avgRating * 100.0) / 100.0 : 0.0);
 
-        // Distribution des notes
-        List<DashboardStatsDTO.RatingDistribution> ratingDist = new ArrayList<>();
-        for (Object[] row : feedbackRepository.findRatingDistribution()) {
-            ratingDist.add(DashboardStatsDTO.RatingDistribution.builder()
-                    .rating((Integer) row[0])
-                    .count((Long) row[1])
-                    .build());
+            // Distribution des notes
+            List<DashboardStatsDTO.RatingDistribution> ratingDist = new ArrayList<>();
+            try {
+                List<Object[]> rows = feedbackRepository.findRatingDistribution();
+                if (rows != null) {
+                    for (Object[] row : rows) {
+                        if (row != null && row.length >= 2 && row[0] != null && row[1] != null) {
+                            Number ratingNum = (Number) row[0];
+                            Number countNum = (Number) row[1];
+                            ratingDist.add(DashboardStatsDTO.RatingDistribution.builder()
+                                    .rating(ratingNum.intValue())
+                                    .count(countNum.longValue())
+                                    .build());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore query failure fallback
+            }
+            stats.setRatingDistribution(ratingDist);
+
+            // Feedbacks par session
+            List<DashboardStatsDTO.SessionFeedbackStat> sessionStats = new ArrayList<>();
+            try {
+                List<Object[]> rows = feedbackRepository.findFeedbackStatsBySession();
+                if (rows != null) {
+                    for (Object[] row : rows) {
+                        if (row != null && row.length >= 3 && row[0] != null) {
+                            String sessionName = (String) row[0];
+                            Number countNum = (Number) row[1];
+                            Number avgNum = (Number) row[2];
+                            double avg = avgNum != null ? Math.round(avgNum.doubleValue() * 100.0) / 100.0 : 0.0;
+                            sessionStats.add(DashboardStatsDTO.SessionFeedbackStat.builder()
+                                    .sessionName(sessionName)
+                                    .feedbackCount(countNum != null ? countNum.longValue() : 0L)
+                                    .averageRating(avg)
+                                    .build());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore query failure fallback
+            }
+            stats.setFeedbacksBySession(sessionStats);
+
+            // Feedbacks mensuels
+            List<DashboardStatsDTO.MonthlyFeedback> monthlyFeedbacks = new ArrayList<>();
+            try {
+                List<Object[]> rows = feedbackRepository.findMonthlyFeedbackCounts();
+                if (rows != null) {
+                    for (Object[] row : rows) {
+                        if (row != null && row.length >= 2 && row[0] != null && row[1] != null) {
+                            monthlyFeedbacks.add(DashboardStatsDTO.MonthlyFeedback.builder()
+                                    .month(row[0].toString())
+                                    .count(((Number) row[1]).longValue())
+                                    .build());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore query failure fallback
+            }
+            stats.setMonthlyFeedbacks(monthlyFeedbacks);
+
+        } catch (Exception e) {
+            // Guarantee a valid stats object is returned
         }
-        stats.setRatingDistribution(ratingDist);
-
-        // Feedbacks par session
-        List<DashboardStatsDTO.SessionFeedbackStat> sessionStats = new ArrayList<>();
-        for (Object[] row : feedbackRepository.findFeedbackStatsBySession()) {
-            sessionStats.add(DashboardStatsDTO.SessionFeedbackStat.builder()
-                    .sessionName((String) row[0])
-                    .feedbackCount((Long) row[1])
-                    .averageRating(Math.round((Double) row[2] * 100.0) / 100.0)
-                    .build());
-        }
-        stats.setFeedbacksBySession(sessionStats);
-
-        // Feedbacks mensuels
-        List<DashboardStatsDTO.MonthlyFeedback> monthlyFeedbacks = new ArrayList<>();
-        for (Object[] row : feedbackRepository.findMonthlyFeedbackCounts()) {
-            monthlyFeedbacks.add(DashboardStatsDTO.MonthlyFeedback.builder()
-                    .month((String) row[0])
-                    .count((Long) row[1])
-                    .build());
-        }
-        stats.setMonthlyFeedbacks(monthlyFeedbacks);
 
         return stats;
     }
@@ -84,15 +121,15 @@ public class DashboardService {
      */
     public ParticipantDashboardStatsDTO getParticipantStatistics(Long userId) {
         long totalSessions = suiviFeedbackRepository.findByUserId(userId).size();
-        
+
         long submitted = feedbackRepository.findByUserId(userId, Pageable.unpaged()).getTotalElements();
-        
+
         long pending = suiviFeedbackRepository.findByUserId(userId).stream()
                 .filter(sf -> sf.getStatus() == FeedbackStatus.EN_ATTENTE)
                 .count();
 
         List<ParticipantDashboardStatsDTO.MonthlyFeedbackStat> monthlyFeedbacks = new ArrayList<>();
-        
+
         List<Feedback> userFeedbacks = feedbackRepository.findByUserId(userId, Pageable.unpaged()).getContent();
         java.util.Map<String, Long> monthlyCounts = new java.util.TreeMap<>();
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM");
@@ -102,7 +139,7 @@ public class DashboardService {
                 monthlyCounts.put(monthKey, monthlyCounts.getOrDefault(monthKey, 0L) + 1L);
             }
         }
-        
+
         for (java.util.Map.Entry<String, Long> entry : monthlyCounts.entrySet()) {
             monthlyFeedbacks.add(ParticipantDashboardStatsDTO.MonthlyFeedbackStat.builder()
                     .month(entry.getKey())

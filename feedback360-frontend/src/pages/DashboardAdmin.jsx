@@ -25,6 +25,28 @@ ChartJS.register(
   Legend
 );
 
+const FALLBACK_STATS = {
+  totalUsers: 0,
+  totalSessions: 0,
+  totalFeedbacks: 4,
+  pendingFeedbacks: 0,
+  submittedFeedbacks: 4,
+  totalNotifications: 0,
+  pendingNotifications: 0,
+  averageRating: 4.85,
+  ratingDistribution: [
+    { rating: 4, count: 1 },
+    { rating: 5, count: 3 },
+  ],
+  feedbacksBySession: [
+    { sessionName: 'Spring Boot 3', feedbackCount: 1, averageRating: 5.0 },
+    { sessionName: 'Design System', feedbackCount: 1, averageRating: 5.0 },
+    { sessionName: 'CI/CD & Kubernetes', feedbackCount: 1, averageRating: 4.5 },
+    { sessionName: 'Pipeline IA', feedbackCount: 1, averageRating: 5.0 },
+  ],
+  monthlyFeedbacks: [],
+};
+
 const DashboardAdmin = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +59,8 @@ const DashboardAdmin = () => {
         setStats(data);
       } catch (err) {
         console.error(err);
-        setError('Erreur lors du chargement des statistiques du dashboard');
+        setError('Données statistiques API indisponibles — affichage des données exemples.');
+        setStats(FALLBACK_STATS);
       } finally {
         setLoading(false);
       }
@@ -53,13 +76,14 @@ const DashboardAdmin = () => {
     );
   }
 
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
+  if (!stats) {
+    return <Alert severity="error">Impossible de charger les statistiques du dashboard.</Alert>;
   }
 
   // Configuration des graphiques Chart.js
-  const ratingLabels = stats.ratingDistribution.map((item) => `${item.rating} Étoile(s)`);
-  const ratingData = stats.ratingDistribution.map((item) => item.count);
+  const ratingDistribution = stats.ratingDistribution || [];
+  const ratingLabels = ratingDistribution.map((item) => `${item.rating} Étoile(s)`);
+  const ratingData = ratingDistribution.map((item) => item.count);
 
   const barChartData = {
     labels: ratingLabels,
@@ -127,9 +151,15 @@ const DashboardAdmin = () => {
 
   return (
     <Box className="animate-fade-in" sx={{ color: '#0f172a' }}>
-      <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'Outfit', mb: 3 }} className="gradient-text">
+      <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'Outfit', mb: error ? 1 : 3 }} className="gradient-text">
         Tableau de bord administrateur
       </Typography>
+
+      {error && (
+        <Alert severity="warning" sx={{ mb: 3, borderRadius: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       {/* Grid Cartes Stats */}
       <Grid container spacing={3} mb={4}>
@@ -183,14 +213,14 @@ const DashboardAdmin = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {stats.feedbacksBySession.length === 0 ? (
+            {(stats.feedbacksBySession || []).length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} align="center" sx={{ color: '#9ca3af' }}>
                   Aucune session disponible
                 </TableCell>
               </TableRow>
             ) : (
-              stats.feedbacksBySession.map((row, index) => (
+              (stats.feedbacksBySession || []).map((row, index) => (
                 <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 }, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                   <TableCell component="th" scope="row" sx={{ fontWeight: 600, color: '#f3f4f6' }}>
                     {row.sessionName}

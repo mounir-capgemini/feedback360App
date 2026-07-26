@@ -2,9 +2,21 @@ import React from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
 import { Security as SecurityIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const UnauthorizedPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleGoToDashboard = () => {
+    if (user?.role === 'ADMIN') {
+      navigate('/admin/dashboard');
+    } else if (user?.role === 'PARTICIPANT') {
+      navigate('/formations');
+    } else {
+      navigate('/login');
+    }
+  };
 
   return (
     <Container maxWidth="md">
@@ -33,23 +45,41 @@ const UnauthorizedPage = () => {
         <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 500 }}>
           Vous n'avez pas les autorisations nécessaires pour accéder à cette page. Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur.
         </Typography>
-        <Button
-          variant="contained"
-          onClick={() => navigate('/')}
-          sx={{
-            px: 4,
-            py: 1.5,
-            fontWeight: 700,
-            borderRadius: 2,
-            background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-            boxShadow: '0 4px 14px rgba(37,99,235,0.14)',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
-            },
-          }}
-        >
-          Retourner à l'accueil
-        </Button>
+        <Box display="flex" gap={2} flexWrap="wrap" justifyContent="center">
+          {user && (
+            <Button
+              variant="contained"
+              onClick={handleGoToDashboard}
+              sx={{
+                px: 4,
+                py: 1.5,
+                fontWeight: 700,
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                boxShadow: '0 4px 14px rgba(37,99,235,0.14)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                },
+              }}
+            >
+              Accéder à mon espace
+            </Button>
+          )}
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/')}
+            sx={{
+              px: 4,
+              py: 1.5,
+              fontWeight: 700,
+              borderRadius: 2,
+              borderColor: 'rgba(37,99,235,0.4)',
+              color: '#2563eb',
+            }}
+          >
+            Retourner à l'accueil
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

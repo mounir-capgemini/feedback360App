@@ -26,6 +26,14 @@ const PrivateRoute = ({ children, requiredRole }) => {
   }
 
   if (requiredRole && user?.role !== requiredRole) {
+    if (user?.role === 'ADMIN') {
+      if (location.pathname === '/formations') {
+        return <Navigate to="/admin/formations" replace />;
+      }
+      return <Navigate to="/admin/dashboard" replace />;
+    } else if (user?.role === 'PARTICIPANT') {
+      return <Navigate to="/formations" replace />;
+    }
     return <Navigate to="/unauthorized" replace />;
   }
 

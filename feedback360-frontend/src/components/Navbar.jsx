@@ -122,6 +122,12 @@ const Navbar = ({ handleDrawerToggle, publicMode = false }) => {
                 Formations
               </Button>
               <Button
+                onClick={() => scrollToSection('testimonials')}
+                sx={{ color: '#475569', fontWeight: 600, fontSize: '0.9rem', '&:hover': { color: '#2563eb' } }}
+              >
+                Avis & Témoignages
+              </Button>
+              <Button
                 onClick={() => scrollToSection('contact')}
                 sx={{ color: '#475569', fontWeight: 600, fontSize: '0.9rem', '&:hover': { color: '#2563eb' } }}
               >
@@ -133,22 +139,40 @@ const Navbar = ({ handleDrawerToggle, publicMode = false }) => {
 
         <Box display="flex" alignItems="center" gap={1}>
           {publicMode && !user ? (
-            <Button
-              variant="contained"
-              onClick={() => navigate('/admin/login')}
-              sx={{
-                fontWeight: 700,
-                background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-                color: '#ffffff',
-                borderRadius: 2,
-                boxShadow: '0 4px 14px rgba(37,99,235,0.14)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
-                },
-              }}
-            >
-              Connexion Administrateur
-            </Button>
+            <Box display="flex" gap={1.5}>
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/login')}
+                sx={{
+                  fontWeight: 700,
+                  borderRadius: 2,
+                  color: '#2563eb',
+                  borderColor: 'rgba(37,99,235,0.4)',
+                  '&:hover': {
+                    borderColor: '#2563eb',
+                    bgcolor: 'rgba(37,99,235,0.04)',
+                  },
+                }}
+              >
+                Connexion Participant
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => navigate('/admin/login')}
+                sx={{
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                  color: '#ffffff',
+                  borderRadius: 2,
+                  boxShadow: '0 4px 14px rgba(37,99,235,0.14)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                  },
+                }}
+              >
+                Connexion Admin
+              </Button>
+            </Box>
           ) : (
             <>
               {user?.role === 'PARTICIPANT' && publicMode && (
