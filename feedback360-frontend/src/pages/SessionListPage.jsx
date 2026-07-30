@@ -23,6 +23,20 @@ import { sessionService } from '../services/sessionService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
+/**
+ * ============================================================================
+ * PAGE : SessionListPage (Catalogue des Sessions de Formation)
+ * ============================================================================
+ * Rôle : Affiche la liste des formations disponibles. S'adapte dynamiquement 
+ *        selon le rôle connecté (ADMIN vs PARTICIPANT).
+ * 
+ * Fonctionnalités clés :
+ * - Mode Admin : Récupération paginée et triée côté serveur via backend API (`sessionService.getSessions`).
+ * - Mode Participant : Chargement des sessions assignées à l'utilisateur (`getMySessions`) avec recherche/filtrage local.
+ * - Barre de recherche temps réel avec mécanisme de Debounce (300ms).
+ * - Tri interactif par nom de session, date d'importation, etc.
+ * ============================================================================
+ */
 const SessionListPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();

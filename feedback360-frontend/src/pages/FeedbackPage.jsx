@@ -17,6 +17,20 @@ import {
 } from '@mui/material';
 import { ArrowBack as BackIcon, Send as SendIcon } from '@mui/icons-material';
 
+/**
+ * ============================================================================
+ * PAGE : FeedbackPage (Formulaire de Soumission de Feedback)
+ * ============================================================================
+ * Rôle : Permet à un participant de donner son avis (note + commentaire) 
+ *        sur une session de formation spécifique.
+ * 
+ * Fonctionnalités clés :
+ * - Gestion de formulaires avec `react-hook-form` (`useForm`, `Controller`).
+ * - Validation des données (Commentaire obligatoire >= 10 caractères, note par étoiles avec MUI `Rating`).
+ * - Interaction API via `feedbackService.submitFeedback(sessionId, comment, rating)`.
+ * - Notifications Toast de succès via MUI `Snackbar` et redirection automatique vers `/my-feedbacks`.
+ * ============================================================================
+ */
 const FeedbackPage = () => {
   const { formationId: sessionId } = useParams();
   const navigate = useNavigate();

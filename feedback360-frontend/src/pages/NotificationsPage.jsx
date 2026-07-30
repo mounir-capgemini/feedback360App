@@ -22,6 +22,19 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { USER_ROLE } from '../utils/constants';
 
+/**
+ * ============================================================================
+ * PAGE : NotificationsPage (Centre de Notifications)
+ * ============================================================================
+ * Rôle : Affiche l'ensemble des notifications adressées à l'utilisateur 
+ *        (demandes d'avis suite à l'import TalentUp, rappels, etc.).
+ * 
+ * Fonctionnalités clés :
+ * - Chargement adaptatif : `getAllNotifications` pour les administrateurs, `getMyNotifications` pour les participants.
+ * - Statut des notifications : Marquage d'une notification comme lue via `notificationService.markAsRead(id)`.
+ * - Distinction visuelle des notifications non lues (`PENDING`) avec mise en valeur de fond et bouton d'action.
+ * ============================================================================
+ */
 const NotificationsPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();

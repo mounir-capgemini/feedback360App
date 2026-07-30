@@ -18,6 +18,20 @@ import {
 } from '@mui/material';
 import { Save as SaveIcon, AccountCircle } from '@mui/icons-material';
 
+/**
+ * ============================================================================
+ * PAGE : ProfilePage (Gestion du Profil Utilisateur)
+ * ============================================================================
+ * Rôle : Permet à tout utilisateur connecté d'afficher et de mettre à jour 
+ *        ses informations personnelles (nom complet, email, avatar, mot de passe).
+ * 
+ * Fonctionnalités clés :
+ * - Pré-remplissage dynamique avec `userService.getProfile()`.
+ * - Modification du nom, email, URL d'avatar (prévisualisation instantanée via `watch('photo')`).
+ * - Modification optionnelle du mot de passe.
+ * - Mise à jour du contexte d'authentification global (`AuthContext`) et du `localStorage`.
+ * ============================================================================
+ */
 const ProfilePage = () => {
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);

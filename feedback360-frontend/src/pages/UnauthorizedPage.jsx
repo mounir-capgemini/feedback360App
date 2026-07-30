@@ -4,6 +4,19 @@ import { Security as SecurityIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
+/**
+ * ============================================================================
+ * PAGE : UnauthorizedPage (Page d'Erreur 403 - Accès Refusé)
+ * ============================================================================
+ * Rôle : Affiche un message d'erreur clair lorsqu'un utilisateur tente d'accéder
+ *        à une route pour laquelle il n'a pas les droits nécessaires.
+ * 
+ * Fonctionnalités clés :
+ * - Bouton de redirection intelligente `handleGoToDashboard()` redirigeant 
+ *   vers l'espace approprié selon le rôle connecté (`ADMIN` -> `/admin/dashboard`, 
+ *   `PARTICIPANT` -> `/formations`, sinon `/login`).
+ * ============================================================================
+ */
 const UnauthorizedPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();

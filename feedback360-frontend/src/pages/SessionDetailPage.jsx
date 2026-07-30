@@ -22,6 +22,20 @@ import { sessionService } from '../services/sessionService';
 import { feedbackService } from '../services/feedbackService';
 import { useAuth } from '../hooks/useAuth';
 
+/**
+ * ============================================================================
+ * PAGE : SessionDetailPage (Détails d'une Session de Formation)
+ * ============================================================================
+ * Rôle : Affiche la fiche détaillée d'un module de formation sélectionné
+ *        ainsi que la liste paginée de tous les retours (feedbacks) déposés sur ce module.
+ * 
+ * Fonctionnalités clés :
+ * - Lecture des paramètres URL via `useParams()` pour récupérer l'ID de session (`/formations/:id`).
+ * - Affichage des métadonnées TalentUp (Module ID, Parcours, Population, Formateur).
+ * - Consultation de la liste paginée des feedbacks associés.
+ * - Bouton "Donner mon avis" dynamique (visible uniquement pour le rôle PARTICIPANT).
+ * ============================================================================
+ */
 const SessionDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();

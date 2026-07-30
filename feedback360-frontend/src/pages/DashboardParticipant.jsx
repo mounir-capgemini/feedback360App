@@ -7,6 +7,18 @@ import { notificationService } from '../services/notificationService';
 import { dashboardService } from '../services/dashboardService';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * ============================================================================
+ * PAGE : DashboardParticipant (Espace d'accueil du Participant)
+ * ============================================================================
+ * Rôle : Vue principale pour les utilisateurs avec le rôle PARTICIPANT.
+ * 
+ * Fonctionnalités clés :
+ * - Cartes statistiques personnelles : Nombre total de sessions suivies, avis soumis vs en attente.
+ * - Widget "Mes Formations" : Liste réduite des 5 dernières formations avec bouton direct d'évaluation ("Donner avis").
+ * - Widget "Notifications récentes" : Aperçu des dernières demandes de feedback reçues via l'intégration TalentUp.
+ * ============================================================================
+ */
 const DashboardParticipant = () => {
   const { user } = useAuth();
   const navigate = useNavigate();

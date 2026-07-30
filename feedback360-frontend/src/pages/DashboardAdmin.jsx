@@ -47,6 +47,20 @@ const FALLBACK_STATS = {
   monthlyFeedbacks: [],
 };
 
+/**
+ * ============================================================================
+ * PAGE : DashboardAdmin (Tableau de Bord Administrateur)
+ * ============================================================================
+ * Rôle : Vue principale et synthétique réservée au rôle ADMIN. 
+ *        Offre un pilotage global de la qualité des formations et de la participation.
+ * 
+ * Fonctionnalités clés :
+ * - Indicateurs clés (KPIs) : Total utilisateurs, sessions, feedbacks reçus, note globale moyenne.
+ * - Graphique Bar Chart (Chart.js) : Répartition des notes de 1 à 5 étoiles.
+ * - Graphique Pie Chart (Chart.js) : Statut global des demandes de feedbacks (En attente vs Soumis).
+ * - Tableau récapitulatif des performances par session de formation.
+ * ============================================================================
+ */
 const DashboardAdmin = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);

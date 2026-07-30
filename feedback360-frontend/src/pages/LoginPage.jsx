@@ -15,6 +15,20 @@ import {
   Snackbar,
 } from '@mui/material';
 
+/**
+ * ============================================================================
+ * PAGE : LoginPage (Page de Connexion - Participant & Admin)
+ * ============================================================================
+ * Rôle : Permet à un utilisateur (Participant ou Administrateur) de s'authentifier.
+ * 
+ * Fonctionnalités clés :
+ * - Mode mixte : Supporte le flux standard (`/login`) et le flux Admin (`/admin/login` via prop `isAdminFlow`).
+ * - Validation des identifiants avec `react-hook-form`.
+ * - Appel API `authService.login(...)` pour récupérer le Token JWT et les infos utilisateur.
+ * - Stockage du token & état via `useAuth().login(...)`.
+ * - Redirection automatique selon le rôle (`/admin/dashboard` ou `/formations`).
+ * ============================================================================
+ */
 const LoginPage = ({ isAdminFlow = false }) => {
   const { login } = useAuth();
   const navigate = useNavigate();

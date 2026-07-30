@@ -42,6 +42,19 @@ const FALLBACK_STATS = {
   ratingDistribution: [],
 };
 
+/**
+ * ============================================================================
+ * PAGE : StatisticsPage (Analyses & Statistiques Avancées - Admin)
+ * ============================================================================
+ * Rôle : Présente à l'administrateur des visualisations graphiques avancées 
+ *        sur l'évolution de la plateforme et l'évaluation des formations.
+ * 
+ * Fonctionnalités clés :
+ * - Graphique linéaire (Chart.js Line) : Évolution du nombre de feedbacks mois par mois.
+ * - Graphique en barres (Chart.js Bar) : Comparatif des notes moyennes par session de formation.
+ * - Gestion du mode Fallback en cas d'indisponibilité temporaire des APIs du backend.
+ * ============================================================================
+ */
 const StatisticsPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);

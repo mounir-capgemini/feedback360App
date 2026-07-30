@@ -49,6 +49,19 @@ import {
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 
+/**
+ * ============================================================================
+ * PAGE : LandingPage (Page de Présentation / Vitrine Publique)
+ * ============================================================================
+ * Rôle : Page d'accueil publique mettant en valeur les fonctionnalités de Feedback360.
+ * 
+ * Fonctionnalités clés :
+ * - Hero Section avec gradients modernes et appels à l'action (CTA "Commencer", "En savoir plus").
+ * - Présentation des fonctionnalités clés (Intégration TalentUp, Sécurité JWT, Dashboards).
+ * - Aperçu des formations et des témoignages récents.
+ * - Dialogue modal de présentation du concept et des avantages.
+ * ============================================================================
+ */
 const sampleFeedbacks = [
   {
     id: 1,

@@ -15,6 +15,20 @@ import {
 import { feedbackService } from '../services/feedbackService';
 import { Star as StarIcon } from '@mui/icons-material';
 
+/**
+ * ============================================================================
+ * PAGE : MyFeedbacksPage (Historique Personnel des Feedbacks)
+ * ============================================================================
+ * Rôle : Permet à un utilisateur connecté (Participant) de consulter 
+ *        l'historique de tous les avis qu'il a précédemment soumis.
+ * 
+ * Fonctionnalités clés :
+ * - Chargement des avis de l'utilisateur connecté via `feedbackService.getMyFeedbacks(page, rowsPerPage)`.
+ * - Présentation claire sous forme de cartes d'évaluation avec note par étoiles et commentaires en italique.
+ * - Pagination intégrée (`TablePagination`).
+ * - Message d'illustration si aucun feedback n'a encore été soumis.
+ * ============================================================================
+ */
 const MyFeedbacksPage = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);

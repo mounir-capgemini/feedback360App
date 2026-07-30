@@ -20,6 +20,19 @@ import {
 } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 
+/**
+ * ============================================================================
+ * PAGE : AdminUsersPage (Gestion des Utilisateurs - Espace Admin)
+ * ============================================================================
+ * Rôle : Permet aux administrateurs de consulter la liste complète de tous
+ *        les utilisateurs enregistrés dans la plateforme (Participants & Admins).
+ * 
+ * Fonctionnalités clés :
+ * - Appel API paginé via `userService.getAllUsers(page, rowsPerPage)`.
+ * - Affichage dynamique avec photo/avatar, rôle (`ADMIN` ou `PARTICIPANT`) sous forme de badge.
+ * - Table responsive Material-UI (`TableContainer`, `TablePagination`).
+ * ============================================================================
+ */
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);

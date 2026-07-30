@@ -73,6 +73,19 @@ const sampleAdminFeedbacks = [
   },
 ];
 
+/**
+ * ============================================================================
+ * PAGE : AdminFeedbacksPage (Historique & Export des Feedbacks - Admin)
+ * ============================================================================
+ * Rôle : Permet aux administrateurs d'analyser l'ensemble des retours 
+ *        et commentaires laissés par les participants.
+ * 
+ * Fonctionnalités clés :
+ * - Export Excel (.xlsx) : Bouton d'export déclenchant `feedbackService.exportFeedbacks()` et le téléchargement du rapport.
+ * - Table d'historique complète : Participant (avec avatar/badge), session, note par étoiles, commentaire et date.
+ * - Pagination serveur & intégration d'échantillons d'exemples.
+ * ============================================================================
+ */
 const AdminFeedbacksPage = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);

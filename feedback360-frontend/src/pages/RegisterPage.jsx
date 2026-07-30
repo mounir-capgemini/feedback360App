@@ -26,6 +26,18 @@ import {
   PersonAdd as PersonAddIcon,
 } from '@mui/icons-material';
 
+/**
+ * ============================================================================
+ * PAGE : RegisterPage (Page d'Inscription des Participants)
+ * ============================================================================
+ * Rôle : Permet aux nouveaux participants de créer un compte sur Feedback360.
+ * 
+ * Fonctionnalités clés :
+ * - Formulaire complet avec validation (nom complet, email, mot de passe et confirmation).
+ * - Affichage/masquage dynamique du mot de passe (icônes œil).
+ * - Création du compte via `authService.register(...)` puis connexion directe (`authService.login`).
+ * ============================================================================
+ */
 const RegisterPage = () => {
   const { registerUser } = useAuth();
   const navigate = useNavigate();
