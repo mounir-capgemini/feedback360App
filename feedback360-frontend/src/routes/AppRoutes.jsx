@@ -17,6 +17,7 @@ import { USER_ROLE } from '../utils/constants';
 
 // Nouvelles pages
 import LandingPage from '../pages/LandingPage';
+import RegisterPage from '../pages/RegisterPage';
 import ProfilePage from '../pages/ProfilePage';
 import AdminUsersPage from '../pages/AdminUsersPage';
 import AdminFeedbacksPage from '../pages/AdminFeedbacksPage';
@@ -44,6 +45,20 @@ const AppRoutes = () => {
               )
             ) : (
               <LoginPage />
+            )
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            isAuthenticated() ? (
+              user?.role === USER_ROLE.ADMIN ? (
+                <Navigate to="/admin/dashboard" replace />
+              ) : (
+                <Navigate to="/formations" replace />
+              )
+            ) : (
+              <RegisterPage />
             )
           }
         />

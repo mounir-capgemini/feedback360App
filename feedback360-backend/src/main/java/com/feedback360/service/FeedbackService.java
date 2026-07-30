@@ -70,7 +70,8 @@ public class FeedbackService {
                 .type(NotificationType.REMINDER)
                 .status(NotificationStatus.PENDING)
                 .build();
-        notificationRepository.save(notification);
+        Notification safeNotification = Objects.requireNonNull(notification, "Notification must not be null");
+        notificationRepository.save(safeNotification);
 
         return feedbackMapper.toDTO(feedback);
     }

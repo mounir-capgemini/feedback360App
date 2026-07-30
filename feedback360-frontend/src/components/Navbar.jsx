@@ -128,10 +128,10 @@ const Navbar = ({ handleDrawerToggle, publicMode = false }) => {
                 Avis & Témoignages
               </Button>
               <Button
-                onClick={() => scrollToSection('contact')}
+                onClick={() => scrollToSection('register')}
                 sx={{ color: '#475569', fontWeight: 600, fontSize: '0.9rem', '&:hover': { color: '#2563eb' } }}
               >
-                Contact
+                Inscription
               </Button>
             </Box>
           )}
@@ -140,6 +140,22 @@ const Navbar = ({ handleDrawerToggle, publicMode = false }) => {
         <Box display="flex" alignItems="center" gap={1}>
           {publicMode && !user ? (
             <Box display="flex" gap={1.5}>
+              <Button
+                variant="contained"
+                onClick={() => navigate('/register')}
+                sx={{
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                  color: '#ffffff',
+                  borderRadius: 2,
+                  boxShadow: '0 4px 14px rgba(37,99,235,0.2)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)',
+                  },
+                }}
+              >
+                S'inscrire
+              </Button>
               <Button
                 variant="outlined"
                 onClick={() => navigate('/login')}
@@ -154,23 +170,22 @@ const Navbar = ({ handleDrawerToggle, publicMode = false }) => {
                   },
                 }}
               >
-                Connexion Participant
+                Connexion
               </Button>
               <Button
-                variant="contained"
+                variant="text"
                 onClick={() => navigate('/admin/login')}
                 sx={{
-                  fontWeight: 700,
-                  background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-                  color: '#ffffff',
+                  fontWeight: 600,
+                  color: '#64748b',
                   borderRadius: 2,
-                  boxShadow: '0 4px 14px rgba(37,99,235,0.14)',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                    color: '#1e293b',
+                    bgcolor: 'rgba(100,116,139,0.08)',
                   },
                 }}
               >
-                Connexion Admin
+                Espace Admin
               </Button>
             </Box>
           ) : (

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { sessionService } from '../services/sessionService';
+import { authService } from '../services/authService';
 import { useAuth } from '../hooks/useAuth';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import {
   Box,
   Typography,
@@ -23,6 +25,9 @@ import {
   Divider,
   Chip,
   Rating,
+  TextField,
+  Snackbar,
+  InputAdornment,
 } from '@mui/material';
 import {
   School as SchoolIcon,
@@ -37,6 +42,11 @@ import {
   Verified as VerifiedIcon,
   Star as StarIcon,
   ThumbUp as ThumbUpIcon,
+  Person as PersonIcon,
+  Email as EmailIcon,
+  Lock as LockIcon,
+  PersonAdd as PersonAddIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 
 const sampleFeedbacks = [
@@ -92,7 +102,7 @@ const sampleFeedbacks = [
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, registerUser } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -100,6 +110,79 @@ const LandingPage = () => {
   // Modal State
   const [selectedSession, setSelectedSession] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Register Form State (Bas de page)
+  const [regForm, setRegForm] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [regLoading, setRegLoading] = useState(false);
+  const [regError, setRegError] = useState('');
+  const [regSuccessMessage, setRegSuccessMessage] = useState('');
+
+  const handleRegChange = (e) => {
+    setRegForm({
+      ...regForm,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleRegSubmit = async (e) => {
+    e.preventDefault();
+    setRegError('');
+
+    if (!regForm.fullName.trim()) {
+      setRegError('Le nom complet est obligatoire');
+      return;
+    }
+    if (!regForm.email.trim()) {
+      setRegError('L\'adresse email est obligatoire');
+      return;
+    }
+    if (regForm.password.length < 6) {
+      setRegError('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+    if (regForm.password !== regForm.confirmPassword) {
+      setRegError('Les mots de passe ne correspondent pas');
+      return;
+    }
+
+    setRegLoading(true);
+    try {
+      const res = await authService.register(
+        regForm.fullName.trim(),
+        regForm.email.trim(),
+        regForm.password
+      );
+
+      const userData = {
+        userId: res.userId,
+        email: res.email,
+        fullName: res.fullName,
+        role: res.role,
+      };
+
+      if (registerUser) {
+        registerUser(userData, res.token);
+      }
+
+      setRegSuccessMessage('Inscription réussie ! Redirection en cours...');
+      setTimeout(() => {
+        navigate('/formations', { replace: true });
+      }, 1200);
+    } catch (err) {
+      console.error('Erreur inscription landing page:', err);
+      setRegError(
+        err.response?.data?.message ||
+          'Erreur lors de l\'inscription. Cet email est peut-être déjà utilisé.'
+      );
+    } finally {
+      setRegLoading(false);
+    }
+  };
 
   useEffect(() => {
     // If already authenticated and visiting /, we can redirect or let them browse
@@ -1209,64 +1292,373 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-
-      {/* Footer */}
+      {/* Section d'inscription en bas de page */}
       <Box
-        id="contact"
-        component="footer"
+        id="register"
         sx={{
-          bgcolor: '#0f172a',
-          color: '#94a3b8',
-          py: 6,
-          mt: 'auto',
-          borderTop: '1px solid #1e293b',
+          py: { xs: 8, md: 10 },
+          background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)',
+          color: '#ffffff',
+          position: 'relative',
+          overflow: 'hidden',
+          borderTop: '1px solid rgba(59, 130, 246, 0.2)',
         }}
       >
-        <Container maxWidth="lg">
-          <Grid container spacing={4} sx={{ mb: 4 }}>
+        {/* Cercles décoratifs de fond */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '-20%',
+            right: '-10%',
+            width: '450px',
+            height: '450px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(37,99,235,0.25) 0%, rgba(0,0,0,0) 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '-20%',
+            left: '-10%',
+            width: '450px',
+            height: '450px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(96,165,250,0.18) 0%, rgba(0,0,0,0) 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+          <Grid container spacing={6} alignItems="center">
+            {/* Colonne Gauche : Présentation */}
             <Grid item xs={12} md={6}>
-              <Typography
-                variant="h6"
+              <Chip
+                icon={<PersonAddIcon sx={{ color: '#60a5fa !important' }} />}
+                label="REJOIGNEZ FEEDBACK360"
                 sx={{
-                  color: '#ffffff',
+                  bgcolor: 'rgba(59, 130, 246, 0.15)',
+                  color: '#60a5fa',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  letterSpacing: '1px',
+                  mb: 2.5,
+                  border: '1px solid rgba(96, 165, 250, 0.3)',
+                }}
+              />
+              <Typography
+                variant="h3"
+                component="h2"
+                sx={{
                   fontWeight: 800,
-                  fontFamily: 'Outfit',
-                  mb: 2,
+                  fontFamily: 'Outfit, sans-serif',
+                  fontSize: { xs: '2rem', md: '2.5rem' },
+                  lineHeight: 1.2,
+                  mb: 2.5,
                 }}
               >
-                Feedback360
+                Inscrivez-vous dès aujourd'hui et exprimez votre avis
               </Typography>
-              <Typography variant="body2" color="#64748b" sx={{ maxWidth: 400 }}>
-                La plateforme ultime de gestion et d'évaluation continue de la qualité de vos formations professionnelles.
+              <Typography
+                variant="body1"
+                sx={{
+                  color: '#94a3b8',
+                  fontSize: '1.05rem',
+                  lineHeight: 1.7,
+                  mb: 4,
+                }}
+              >
+                Rejoignez la plateforme Feedback360. Créez votre compte en quelques clics pour accéder à vos formations et évaluer la qualité de vos apprentissages.
               </Typography>
-            </Grid>
-            <Grid item xs={12} md={6} sx={{ display: 'flex', gap: 4, justifyContent: { md: 'flex-end' }, flexWrap: 'wrap' }}>
-              <Box>
-                <Typography variant="subtitle2" sx={{ color: '#ffffff', fontWeight: 700, mb: 1.5 }}>Légal</Typography>
-                <Box display="flex" flexDirection="column" gap={1}>
-                  <Button variant="text" sx={{ p: 0, minWidth: 0, color: '#94a3b8', fontSize: '0.85rem', textTransform: 'none', justifyContent: 'flex-start', '&:hover': { color: '#ffffff' } }}>
-                    Mentions légales
-                  </Button>
-                  <Button variant="text" sx={{ p: 0, minWidth: 0, color: '#94a3b8', fontSize: '0.85rem', textTransform: 'none', justifyContent: 'flex-start', '&:hover': { color: '#ffffff' } }}>
-                    Politique de confidentialité
-                  </Button>
+
+              <Box display="flex" flexDirection="column" gap={2}>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Box
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      bgcolor: 'rgba(37, 99, 235, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#60a5fa',
+                    }}
+                  >
+                    <CheckCircleIcon fontSize="small" />
+                  </Box>
+                  <Typography variant="body1" sx={{ fontWeight: 600, color: '#f8fafc' }}>
+                    Compte gratuit pour tous les participants
+                  </Typography>
+                </Box>
+
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Box
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      bgcolor: 'rgba(37, 99, 235, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#60a5fa',
+                    }}
+                  >
+                    <CheckCircleIcon fontSize="small" />
+                  </Box>
+                  <Typography variant="body1" sx={{ fontWeight: 600, color: '#f8fafc' }}>
+                    Accès rapide aux sessions et questionnaires
+                  </Typography>
+                </Box>
+
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Box
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      bgcolor: 'rgba(37, 99, 235, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#60a5fa',
+                    }}
+                  >
+                    <CheckCircleIcon fontSize="small" />
+                  </Box>
+                  <Typography variant="body1" sx={{ fontWeight: 600, color: '#f8fafc' }}>
+                    Suivi personnalisé de vos retours d'expérience
+                  </Typography>
                 </Box>
               </Box>
-              <Box>
-                <Typography variant="subtitle2" sx={{ color: '#ffffff', fontWeight: 700, mb: 1.5 }}>Contact</Typography>
-                <Typography variant="body2" color="#64748b">
-                  Email: support@feedback360.com<br />
-                  Tél: +33 (0) 1 00 00 00 00
-                </Typography>
-              </Box>
+            </Grid>
+
+            {/* Colonne Droite : Formulaire d'inscription ou message si déjà connecté */}
+            <Grid item xs={12} md={6}>
+              {user ? (
+                <Paper
+                  sx={{
+                    p: 4,
+                    borderRadius: 4,
+                    background: 'rgba(255, 255, 255, 0.06)',
+                    backdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    textAlign: 'center',
+                  }}
+                >
+                  <Avatar
+                    src={user.photo || ''}
+                    sx={{
+                      width: 72,
+                      height: 72,
+                      mx: 'auto',
+                      mb: 2,
+                      bgcolor: '#2563eb',
+                      fontSize: '1.75rem',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {!user.photo && (user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U')}
+                  </Avatar>
+                  <Typography variant="h5" sx={{ fontWeight: 800, fontFamily: 'Outfit', color: '#ffffff', mb: 1 }}>
+                    Bienvenue, {user.fullName} !
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#94a3b8', mb: 3 }}>
+                    Vous êtes déjà connecté(e) avec <strong>{user.email}</strong>.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => navigate(user.role === 'ADMIN' ? '/admin/dashboard' : '/formations')}
+                    endIcon={<ArrowIcon />}
+                    sx={{
+                      py: 1.5,
+                      px: 4,
+                      fontWeight: 700,
+                      borderRadius: 2.5,
+                      bgcolor: '#2563eb',
+                      '&:hover': { bgcolor: '#1d4ed8' },
+                    }}
+                  >
+                    {user.role === 'ADMIN' ? 'Accéder au Dashboard Admin' : 'Consulter mes formations'}
+                  </Button>
+                </Paper>
+              ) : (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: { xs: 3, sm: 4 },
+                    borderRadius: 4,
+                    background: 'rgba(255, 255, 255, 0.96)',
+                    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4)',
+                    color: '#0f172a',
+                  }}
+                >
+                  <Typography variant="h5" component="h3" sx={{ fontWeight: 800, fontFamily: 'Outfit, sans-serif', mb: 0.5 }}>
+                    Créer mon compte
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Remplissez le formulaire ci-dessous pour créer votre profil.
+                  </Typography>
+
+                  {regError && (
+                    <Alert severity="error" sx={{ mb: 2.5, borderRadius: 2 }}>
+                      {regError}
+                    </Alert>
+                  )}
+
+                  {regSuccessMessage && (
+                    <Alert severity="success" sx={{ mb: 2.5, borderRadius: 2 }}>
+                      {regSuccessMessage}
+                    </Alert>
+                  )}
+
+                  <Box component="form" onSubmit={handleRegSubmit} display="flex" flexDirection="column" gap={2}>
+                    <TextField
+                      fullWidth
+                      name="fullName"
+                      label="Nom complet"
+                      variant="outlined"
+                      value={regForm.fullName}
+                      onChange={handleRegChange}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <PersonIcon sx={{ color: '#2563eb' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          '& fieldset': { borderColor: 'rgba(59,130,246,0.2)' },
+                          '&:hover fieldset': { borderColor: '#2563eb' },
+                        },
+                      }}
+                    />
+
+                    <TextField
+                      fullWidth
+                      name="email"
+                      label="Adresse Email"
+                      type="email"
+                      variant="outlined"
+                      value={regForm.email}
+                      onChange={handleRegChange}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <EmailIcon sx={{ color: '#2563eb' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          '& fieldset': { borderColor: 'rgba(59,130,246,0.2)' },
+                          '&:hover fieldset': { borderColor: '#2563eb' },
+                        },
+                      }}
+                    />
+
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          name="password"
+                          label="Mot de passe"
+                          type="password"
+                          variant="outlined"
+                          value={regForm.password}
+                          onChange={handleRegChange}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <LockIcon sx={{ color: '#2563eb' }} />
+                              </InputAdornment>
+                            ),
+                          }}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              borderRadius: 2,
+                              '& fieldset': { borderColor: 'rgba(59,130,246,0.2)' },
+                              '&:hover fieldset': { borderColor: '#2563eb' },
+                            },
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          name="confirmPassword"
+                          label="Confirmer"
+                          type="password"
+                          variant="outlined"
+                          value={regForm.confirmPassword}
+                          onChange={handleRegChange}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <LockIcon sx={{ color: '#2563eb' }} />
+                              </InputAdornment>
+                            ),
+                          }}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              borderRadius: 2,
+                              '& fieldset': { borderColor: 'rgba(59,130,246,0.2)' },
+                              '&:hover fieldset': { borderColor: '#2563eb' },
+                            },
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      size="large"
+                      disabled={regLoading}
+                      endIcon={regLoading ? <CircularProgress size={20} color="inherit" /> : <PersonAddIcon />}
+                      sx={{
+                        mt: 1,
+                        py: 1.6,
+                        fontWeight: 700,
+                        borderRadius: 2.5,
+                        fontSize: '1rem',
+                        background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                        boxShadow: '0 8px 24px rgba(37,99,235,0.3)',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)',
+                        },
+                      }}
+                    >
+                      {regLoading ? 'Inscription...' : 'S\'inscrire maintenant'}
+                    </Button>
+                  </Box>
+
+                  <Box display="flex" justifyContent="center" mt={2.5}>
+                    <Typography variant="body2" color="text.secondary">
+                      Déjà inscrit ?{' '}
+                      <Button
+                        onClick={() => navigate('/login')}
+                        sx={{ textTransform: 'none', fontWeight: 700, color: '#2563eb', p: 0, minWidth: 'auto', ml: 0.5 }}
+                      >
+                        Se connecter
+                      </Button>
+                    </Typography>
+                  </Box>
+                </Paper>
+              )}
             </Grid>
           </Grid>
-          <Divider sx={{ borderColor: '#1e293b', mb: 3 }} />
-          <Typography variant="body2" align="center" color="#64748b">
-            &copy; {new Date().getFullYear()} Feedback360. Tous droits réservés.
-          </Typography>
         </Container>
       </Box>
+
+      {/* Footer */}
+      <Footer dark={true} />
 
       {/* Interactive Session Details Dialog */}
       <Dialog

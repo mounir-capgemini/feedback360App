@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { sessionService } from '../services/sessionService';
 import { useAuth } from '../hooks/useAuth';
+import Footer from '../components/Footer';
 import {
   Box,
   Typography,
@@ -273,13 +274,7 @@ const PublicHomePage = () => {
       </Container>
 
       {/* Footer */}
-      <Box component="footer" sx={{ bgcolor: '#0f172a', color: '#94a3b8', py: 4, mt: 'auto', borderTop: '1px solid #1e293b' }}>
-        <Container maxWidth="lg">
-          <Typography variant="body2" align="center">
-            &copy; {new Date().getFullYear()} Feedback360. Tous droits réservés.
-          </Typography>
-        </Container>
-      </Box>
+      <Footer dark={true} />
     </Box>
   );
 };
