@@ -90,12 +90,14 @@ const RegisterPage = () => {
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        py: 4,
+      }}
       className="animate-fade-in"
-      py={4}
     >
       <Card
         className="glass-panel"
@@ -110,7 +112,7 @@ const RegisterPage = () => {
         }}
       >
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-          <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
             <Box
               sx={{
                 width: 48,

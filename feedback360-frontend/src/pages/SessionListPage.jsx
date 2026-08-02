@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon, Visibility as ViewIcon, RateReview as ReviewIcon } from '@mui/icons-material';
 import { sessionService } from '../services/sessionService';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 /**
@@ -39,8 +39,10 @@ import { useAuth } from '../hooks/useAuth';
  */
 const SessionListPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [sessions, setSessions] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
   const [allParticipantSessions, setAllParticipantSessions] = useState([]); // stocke toutes les sessions pour le filtrage local
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -54,6 +56,12 @@ const SessionListPage = () => {
   const [search, setSearch] = useState('');
 
   const isAdmin = user?.role === 'ADMIN';
+
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      setSuccessMessage(location.state.successMessage);
+    }
+  }, [location.state?.successMessage]);
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -148,8 +156,14 @@ const SessionListPage = () => {
         {isAdmin ? 'Sessions de formation' : 'Mes Formations'}
       </Typography>
 
+      {successMessage && !isAdmin && (
+        <Alert severity="success" sx={{ mb: 3, borderRadius: 2 }}>
+          {successMessage}
+        </Alert>
+      )}
+
       {/* Barre de recherche */}
-      <Box mb={3} display="flex" gap={2} alignItems="center">
+      <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
         <TextField
           fullWidth
           variant="outlined"

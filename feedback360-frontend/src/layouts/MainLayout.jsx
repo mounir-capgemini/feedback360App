@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Box, CssBaseline, Toolbar } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Sidebar, { drawerWidth } from '../components/Sidebar';
-import Footer from '../components/Footer';
 import { Outlet } from 'react-router-dom';
 
 const MainLayout = () => {
@@ -35,7 +34,6 @@ const MainLayout = () => {
           <Box sx={{ flex: 1, py: 2 }}>
             <Outlet />
           </Box>
-          <Footer />
         </Box>
       </Box>
     </Box>

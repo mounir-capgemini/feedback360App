@@ -28,8 +28,21 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      {/* Page d'accueil publique */}
-      <Route path="/" element={<LandingPage />} />
+      {/* Accueil : rediriger vers la connexion si l'utilisateur n'est pas authentifié */}
+      <Route
+        path="/"
+        element={
+          isAuthenticated() ? (
+            user?.role === USER_ROLE.ADMIN ? (
+              <Navigate to="/admin/dashboard" replace />
+            ) : (
+              <Navigate to="/formations" replace />
+            )
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
       {/* Routes d'authentification publiques */}

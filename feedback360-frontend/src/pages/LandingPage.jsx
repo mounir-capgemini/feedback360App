@@ -744,7 +744,7 @@ const LandingPage = () => {
           )}
 
           {loading ? (
-            <Box display="flex" justifyContent="center" alignItems="center" py={8}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 8 }}>
               <CircularProgress color="primary" />
             </Box>
           ) : (
@@ -772,7 +772,7 @@ const LandingPage = () => {
                         }}
                       >
                         <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', height: '100%' }}>
-                          <Box display="flex" alignItems="center" gap={2} mb={2}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                             <Avatar sx={{ bgcolor: 'rgba(37,99,235,0.1)', color: '#2563eb' }}>
                               <SchoolIcon />
                             </Avatar>
@@ -896,8 +896,8 @@ const LandingPage = () => {
                 >
                   <Box display="flex" flexDirection="column" gap={2.5} height="100%">
                     {/* Header bar: Rating & Date */}
-                    <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
-                      <Box display="flex" alignItems="center" gap={1}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Rating
                           value={item.rating}
                           precision={0.5}
@@ -963,7 +963,7 @@ const LandingPage = () => {
                     <Divider sx={{ borderColor: 'rgba(226,232,240,0.8)' }} />
 
                     {/* User info footer */}
-                    <Box display="flex" alignItems="center" gap={2}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                       <Avatar
                         sx={{
                           bgcolor: item.avatarColor,
@@ -1385,8 +1385,8 @@ const LandingPage = () => {
                 Rejoignez la plateforme Feedback360. Créez votre compte en quelques clics pour accéder à vos formations et évaluer la qualité de vos apprentissages.
               </Typography>
 
-              <Box display="flex" flexDirection="column" gap={2}>
-                <Box display="flex" alignItems="center" gap={2}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Box
                     sx={{
                       width: 36,
@@ -1406,7 +1406,7 @@ const LandingPage = () => {
                   </Typography>
                 </Box>
 
-                <Box display="flex" alignItems="center" gap={2}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Box
                     sx={{
                       width: 36,
@@ -1426,7 +1426,7 @@ const LandingPage = () => {
                   </Typography>
                 </Box>
 
-                <Box display="flex" alignItems="center" gap={2}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Box
                     sx={{
                       width: 36,

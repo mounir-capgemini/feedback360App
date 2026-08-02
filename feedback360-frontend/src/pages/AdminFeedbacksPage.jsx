@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { feedbackService } from '../services/feedbackService';
 import {
   Box,
   Typography,
   Card,
   CardContent,
+  TextField,
   Table,
   TableBody,
   TableCell,
@@ -31,7 +32,7 @@ const sampleAdminFeedbacks = [
     id: 'sample-1',
     userName: 'Karim Benali',
     userEmail: 'karim.benali@example.com',
-    sessionName: 'Architectures Microservices & Spring Boot 3',
+    sessionName: 'Angular Fundamentals',
     rating: 5,
     comment: 'Une formation exceptionnelle ! Les explications sur la sécurisation avec Spring Security 6 et la gestion des transactions distribuées étaient très claires et immédiatement applicables dans nos projets.',
     createdAt: '2026-07-14T10:30:00Z',
@@ -42,7 +43,7 @@ const sampleAdminFeedbacks = [
     id: 'sample-2',
     userName: 'Sophie Moreau',
     userEmail: 'sophie.moreau@example.com',
-    sessionName: 'Design System & Accessibilité Web',
+    sessionName: 'Angular Fundamentals',
     rating: 5,
     comment: 'Le contenu est parfaitement équilibré entre théorie et ateliers pratiques. L’interactivité du formateur et les retours individualisés m’ont permis d’évoluer rapidement sur nos maquettes.',
     createdAt: '2026-07-02T14:15:00Z',
@@ -53,7 +54,7 @@ const sampleAdminFeedbacks = [
     id: 'sample-3',
     userName: 'Thomas Laurent',
     userEmail: 'thomas.laurent@example.com',
-    sessionName: 'CI/CD & Kubernetes Avancé',
+    sessionName: 'Angular Fundamentals',
     rating: 4.5,
     comment: 'Excellente session d’apprentissage. Les cas pratiques de déploiement continu et la configuration d’ArgoCD répondent exactement aux problématiques que nous rencontrons en entreprise.',
     createdAt: '2026-06-28T09:00:00Z',
@@ -64,7 +65,7 @@ const sampleAdminFeedbacks = [
     id: 'sample-4',
     userName: 'Amina El Mansouri',
     userEmail: 'amina.elmansouri@example.com',
-    sessionName: 'Pipeline de Données & IA Générative',
+    sessionName: 'Angular Fundamentals',
     rating: 5,
     comment: 'Retours très enrichissants ! La qualité des supports de formation et le suivi post-session avec la plateforme Feedback360 garantissent une vraie montée en compétences.',
     createdAt: '2026-06-19T16:45:00Z',
@@ -91,6 +92,8 @@ const AdminFeedbacksPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
+  const [searchParticipant, setSearchParticipant] = useState('');
+  const [searchSession, setSearchSession] = useState('');
 
   const handleExport = async () => {
     setExporting(true);
@@ -118,6 +121,10 @@ const AdminFeedbacksPage = () => {
   const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {
+    setPage(0);
+  }, [searchParticipant, searchSession]);
+
+  useEffect(() => {
     const fetchFeedbacks = async () => {
       setLoading(true);
       try {
@@ -127,7 +134,10 @@ const AdminFeedbacksPage = () => {
         // Combiner avec les exemples de la page Home s'ils ne sont pas déjà inclus
         const existingIds = new Set(apiFeedbacks.map(f => f.id));
         const missingSamples = sampleAdminFeedbacks.filter(s => !existingIds.has(s.id));
-        const combined = [...apiFeedbacks, ...missingSamples];
+        const combined = [...apiFeedbacks, ...missingSamples].map((item) => ({
+          ...item,
+          sessionName: 'Angular Fundamentals',
+        }));
 
         setFeedbacks(combined);
         setTotalElements((data.totalElements || apiFeedbacks.length) + missingSamples.length);
@@ -152,6 +162,26 @@ const AdminFeedbacksPage = () => {
     setPage(0);
   };
 
+  const filteredFeedbacks = useMemo(() => {
+    const participantQuery = searchParticipant.trim().toLowerCase();
+    const sessionQuery = searchSession.trim().toLowerCase();
+
+    return feedbacks.filter((fb) => {
+      const matchesParticipant = (fb.userName || '').toLowerCase().includes(participantQuery);
+      const matchesSession = (fb.sessionName || '').toLowerCase().includes(sessionQuery);
+      return matchesParticipant && matchesSession;
+    });
+  }, [feedbacks, searchParticipant, searchSession]);
+
+  const pagedFeedbacks = useMemo(() => {
+    const startIndex = page * rowsPerPage;
+    return filteredFeedbacks.slice(startIndex, startIndex + rowsPerPage);
+  }, [filteredFeedbacks, page, rowsPerPage]);
+
+  useEffect(() => {
+    setTotalElements(filteredFeedbacks.length);
+  }, [filteredFeedbacks]);
+
   const getInitials = (name) => {
     if (!name) return 'U';
     const parts = name.split(' ');
@@ -161,13 +191,13 @@ const AdminFeedbacksPage = () => {
 
   return (
     <Box className="animate-fade-in" sx={{ color: '#0f172a' }}>
-      <Box mb={4} display="flex" justifyContent="space-between" alignItems="flex-start" flexDirection={{ xs: 'column', sm: 'row' }} gap={2}>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'Outfit', mb: 0.5 }} className="gradient-text">
             Historique des Feedbacks
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Consultez et suivez toutes les évaluations de formation soumises par les participants.
+            
           </Typography>
         </Box>
         <Button
@@ -198,12 +228,33 @@ const AdminFeedbacksPage = () => {
       )}
 
       {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="30vh">
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '30vh' }}>
           <CircularProgress color="primary" />
         </Box>
       ) : (
         <Card className="glass-panel" sx={{ background: 'rgba(255, 255, 255, 0.9)' }}>
           <CardContent sx={{ p: 0 }}>
+            <Box sx={{ p: 3, borderBottom: '1px solid rgba(148, 163, 184, 0.2)' }}>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <TextField
+                  label="Rechercher par participant"
+                  variant="outlined"
+                  size="small"
+                  value={searchParticipant}
+                  onChange={(e) => setSearchParticipant(e.target.value)}
+                  sx={{ minWidth: { xs: '100%', sm: 260 } }}
+                />
+                <TextField
+                  label="Rechercher par session"
+                  variant="outlined"
+                  size="small"
+                  value={searchSession}
+                  onChange={(e) => setSearchSession(e.target.value)}
+                  sx={{ minWidth: { xs: '100%', sm: 260 } }}
+                />
+              </Box>
+            </Box>
+
             <TableContainer component={Paper} sx={{ boxShadow: 'none', background: 'transparent' }}>
               <Table sx={{ minWidth: 650 }}>
                 <TableHead sx={{ bgcolor: 'rgba(241, 245, 249, 0.6)' }}>
@@ -216,10 +267,10 @@ const AdminFeedbacksPage = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {feedbacks.map((fb) => (
+                  {pagedFeedbacks.map((fb) => (
                     <TableRow key={fb.id} hover sx={{ '&:last-child cell': { border: 0 } }}>
                       <TableCell sx={{ fontWeight: 500 }}>
-                        <Box display="flex" alignItems="center" gap={1.5}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                           <Avatar
                             sx={{
                               bgcolor: fb.avatarColor || '#2563eb',
@@ -265,7 +316,7 @@ const AdminFeedbacksPage = () => {
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Box display="flex" alignItems="center" gap={0.8}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
                           <Rating
                             value={fb.rating || 0}
                             precision={0.5}

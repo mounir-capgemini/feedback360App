@@ -52,7 +52,7 @@ const DashboardParticipant = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <CircularProgress color="primary" />
       </Box>
     );
@@ -126,7 +126,7 @@ const DashboardParticipant = () => {
       <Grid container spacing={3}>
         <Grid item xs={12} md={7}>
           <Paper className="glass-panel" sx={{ p: 3, background: 'rgba(255,255,255,0.9)', height: '100%' }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, fontFamily: 'Outfit', color: '#0f172a' }}>
                   Mes Formations
                 </Typography>
@@ -174,7 +174,7 @@ const DashboardParticipant = () => {
 
         <Grid item xs={12} md={5}>
           <Paper className="glass-panel" sx={{ p: 3, background: 'rgba(255, 255, 255, 0.9)', height: '100%' }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 700, fontFamily: 'Outfit', color: '#0f172a' }}>
                 Notifications récentes
               </Typography>

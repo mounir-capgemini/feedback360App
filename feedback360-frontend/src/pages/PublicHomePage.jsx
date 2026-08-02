@@ -200,7 +200,7 @@ const PublicHomePage = () => {
         )}
 
         {loading ? (
-          <Box display="flex" justifyContent="center" alignItems="center" py={8}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 8 }}>
             <CircularProgress color="primary" />
           </Box>
         ) : (
@@ -226,7 +226,7 @@ const PublicHomePage = () => {
                       }}
                     >
                       <CardContent>
-                        <Box display="flex" alignItems="center" gap={2} mb={2}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                           <Avatar sx={{ bgcolor: 'rgba(37,99,235,0.1)', color: '#2563eb' }}>
                             <SchoolIcon />
                           </Avatar>

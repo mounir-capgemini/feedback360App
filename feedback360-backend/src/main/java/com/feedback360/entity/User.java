@@ -41,6 +41,10 @@ public class User {
     @Builder.Default
     private Role role = Role.PARTICIPANT;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean enabled = true;
+
     @Column(name = "photo", columnDefinition = "TEXT")
     private String photo;
 

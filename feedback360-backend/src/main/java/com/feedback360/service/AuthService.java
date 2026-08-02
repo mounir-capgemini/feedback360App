@@ -1,7 +1,13 @@
 package com.feedback360.service;
 
-import com.feedback360.dto.*;
+import com.feedback360.dto.AuthResponse;
+import com.feedback360.dto.LoginRequest;
+import com.feedback360.dto.ProfileUpdateDTO;
+import com.feedback360.dto.RegisterRequest;
+import com.feedback360.dto.UserAdminUpdateDTO;
+import com.feedback360.dto.UserDTO;
 import com.feedback360.entity.Role;
+import com.feedback360.exception.ResourceNotFoundException;
 import com.feedback360.entity.User;
 import com.feedback360.exception.BadRequestException;
 import com.feedback360.repository.UserRepository;
@@ -128,6 +134,22 @@ public class AuthService {
     public Page<UserDTO> getAllUsers(@NonNull Pageable pageable) {
         Pageable safePageable = Objects.requireNonNull(pageable, "Pageable must not be null");
         return userRepository.findAll(safePageable).map(userMapper::toDTO);
+    }
+
+    @Transactional
+    public UserDTO updateUserByAdmin(Long userId, UserAdminUpdateDTO dto) {
+        User user = userRepository.findById(Objects.requireNonNull(userId, "userId must not be null"))
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
+
+        if (dto.getRole() != null) {
+            user.setRole(dto.getRole());
+        }
+
+        if (dto.getEnabled() != null) {
+            user.setEnabled(dto.getEnabled());
+        }
+
+        return userMapper.toDTO(Objects.requireNonNull(userRepository.save(user), "Saved user must not be null"));
     }
 
     /**

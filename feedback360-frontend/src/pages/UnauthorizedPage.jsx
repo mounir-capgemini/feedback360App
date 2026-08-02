@@ -34,12 +34,14 @@ const UnauthorizedPage = () => {
   return (
     <Container maxWidth="md">
       <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        minHeight="70vh"
-        textAlign="center"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '70vh',
+          textAlign: 'center',
+        }}
         className="animate-fade-in"
       >
         <SecurityIcon sx={{ fontSize: 100, color: '#ef4444', mb: 3 }} />

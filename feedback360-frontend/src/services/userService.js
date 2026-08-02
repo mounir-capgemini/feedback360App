@@ -24,4 +24,14 @@ export const userService = {
     const response = await api.put('/api/users/profile', profileData);
     return response.data;
   },
+
+  createUser: async (userData) => {
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+  },
+
+  updateUserByAdmin: async (userId, payload) => {
+    const response = await api.put(`/api/users/${userId}`, payload);
+    return response.data;
+  },
 };

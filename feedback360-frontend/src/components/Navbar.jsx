@@ -70,7 +70,7 @@ const Navbar = ({ handleDrawerToggle, publicMode = false }) => {
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Box display="flex" alignItems="center">
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {!publicMode && (
             <IconButton
               color="inherit"
@@ -137,7 +137,7 @@ const Navbar = ({ handleDrawerToggle, publicMode = false }) => {
           )}
         </Box>
 
-        <Box display="flex" alignItems="center" gap={1}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {publicMode && !user ? (
             <Box display="flex" gap={1.5}>
               <Button

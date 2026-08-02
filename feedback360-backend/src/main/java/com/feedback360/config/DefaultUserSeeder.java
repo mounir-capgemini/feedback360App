@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -53,6 +54,42 @@ public class DefaultUserSeeder implements ApplicationRunner {
                             .status(FeedbackStatus.EN_ATTENTE)
                             .build();
                     suiviFeedbackRepository.save(suivi);
+                }
+            }
+        }
+
+        seedParticipantIfAbsent("amina.benali@feedback360.com", "Amina Benali", FeedbackStatus.EN_ATTENTE);
+        seedParticipantIfAbsent("youssef.diallo@feedback360.com", "Youssef Diallo", FeedbackStatus.SOUMIS);
+        seedParticipantIfAbsent("sofia.elamrani@feedback360.com", "Sofia El Amrani", FeedbackStatus.EN_ATTENTE);
+        seedParticipantIfAbsent("karim.mansouri@feedback360.com", "Karim Mansouri", FeedbackStatus.SOUMIS);
+        seedParticipantIfAbsent("thomas.dubois@feedback360.com", "Thomas Dubois", FeedbackStatus.EN_ATTENTE);
+        seedParticipantIfAbsent("sarah.martin@feedback360.com", "Sarah Martin", FeedbackStatus.SOUMIS);
+        seedParticipantIfAbsent("mehdi.tazi@feedback360.com", "Mehdi Tazi", FeedbackStatus.EN_ATTENTE);
+        seedParticipantIfAbsent("claire.lambert@feedback360.com", "Claire Lambert", FeedbackStatus.EN_ATTENTE);
+    }
+
+    @SuppressWarnings("null")
+    private void seedParticipantIfAbsent(String email, String fullName, FeedbackStatus status) {
+        if (!userRepository.existsByEmail(email)) {
+            User participant = User.builder()
+                    .fullName(fullName)
+                    .email(email)
+                    .password(passwordEncoder.encode("participant123"))
+                    .role(Role.PARTICIPANT)
+                    .build();
+
+            User savedParticipant = Objects.requireNonNull(userRepository.save(participant));
+
+            Optional<TrainingSession> sessionOpt = trainingSessionRepository.findByTalentUpModuleId(192L);
+            if (sessionOpt.isPresent()) {
+                TrainingSession session = sessionOpt.get();
+                if (!suiviFeedbackRepository.findByUserIdAndTrainingSessionId(savedParticipant.getId(), session.getId()).isPresent()) {
+                    SuiviFeedback suivi = SuiviFeedback.builder()
+                            .user(savedParticipant)
+                            .trainingSession(session)
+                            .status(status)
+                            .build();
+                    suiviFeedbackRepository.save(Objects.requireNonNull(suivi));
                 }
             }
         }

@@ -99,7 +99,7 @@ const MyFeedbacksPage = () => {
                   sx={{ background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(59,130,246,0.12)' }}
                 >
                   <CardContent sx={{ p: 3 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Box>
                         <Typography variant="h6" sx={{ fontWeight: 700, fontFamily: 'Outfit', color: '#818cf8' }}>
                           {fb.sessionName}

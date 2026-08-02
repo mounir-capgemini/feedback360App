@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Card, CardContent, Typography, CircularProgress, Alert, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Rating } from '@mui/material';
-import { People as PeopleIcon, School as SchoolIcon, RateReview as ReviewIcon, Star as StarIcon } from '@mui/icons-material';
+import { Box, Grid, Card, CardContent, Typography, CircularProgress, Alert, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, LinearProgress, Chip, TextField, InputAdornment } from '@mui/material';
+import { People as PeopleIcon, School as SchoolIcon, RateReview as ReviewIcon, Star as StarIcon, Search as SearchIcon } from '@mui/icons-material';
 import { dashboardService } from '../services/dashboardService';
 import { Bar, Pie } from 'react-chartjs-2';
 import {
@@ -45,6 +45,56 @@ const FALLBACK_STATS = {
     { sessionName: 'Pipeline IA', feedbackCount: 1, averageRating: 5.0 },
   ],
   monthlyFeedbacks: [],
+  userTrainingProgress: [
+    {
+      userName: 'Amina Benali',
+      trainingName: 'Angular Fundamentals',
+      completed: false,
+      progress: 72,
+    },
+    {
+      userName: 'Youssef Diallo',
+      trainingName: 'Angular Fundamentals',
+      completed: true,
+      progress: 100,
+    },
+    {
+      userName: 'Sofia El Amrani',
+      trainingName: 'Angular Fundamentals',
+      completed: false,
+      progress: 45,
+    },
+    {
+      userName: 'Karim Mansouri',
+      trainingName: 'Spring Boot 3',
+      completed: true,
+      progress: 100,
+    },
+    {
+      userName: 'Thomas Dubois',
+      trainingName: 'CI/CD & Kubernetes',
+      completed: false,
+      progress: 85,
+    },
+    {
+      userName: 'Sarah Martin',
+      trainingName: 'Design System',
+      completed: true,
+      progress: 100,
+    },
+    {
+      userName: 'Mehdi Tazi',
+      trainingName: 'Pipeline IA',
+      completed: false,
+      progress: 30,
+    },
+    {
+      userName: 'Claire Lambert',
+      trainingName: 'Spring Boot 3',
+      completed: false,
+      progress: 60,
+    },
+  ],
 };
 
 /**
@@ -65,6 +115,7 @@ const DashboardAdmin = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -84,7 +135,7 @@ const DashboardAdmin = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <CircularProgress color="primary" />
       </Box>
     );
@@ -163,6 +214,65 @@ const DashboardAdmin = () => {
     { title: 'Note globale moyenne', value: `${stats.averageRating} / 5`, icon: <StarIcon sx={{ fontSize: 40, color: '#fbbf24' }} /> },
   ];
 
+  const allTrainingRows = Array.isArray(stats.userTrainingProgress) && stats.userTrainingProgress.length > 0
+    ? stats.userTrainingProgress
+    : [
+        {
+          userName: 'Amina Benali',
+          trainingName: 'Angular Fundamentals',
+          completed: false,
+          progress: 72,
+        },
+        {
+          userName: 'Youssef Diallo',
+          trainingName: 'Angular Fundamentals',
+          completed: true,
+          progress: 100,
+        },
+        {
+          userName: 'Sofia El Amrani',
+          trainingName: 'Angular Fundamentals',
+          completed: false,
+          progress: 45,
+        },
+        {
+          userName: 'Karim Mansouri',
+          trainingName: 'Spring Boot 3',
+          completed: true,
+          progress: 100,
+        },
+        {
+          userName: 'Thomas Dubois',
+          trainingName: 'CI/CD & Kubernetes',
+          completed: false,
+          progress: 85,
+        },
+        {
+          userName: 'Sarah Martin',
+          trainingName: 'Design System',
+          completed: true,
+          progress: 100,
+        },
+        {
+          userName: 'Mehdi Tazi',
+          trainingName: 'Pipeline IA',
+          completed: false,
+          progress: 30,
+        },
+        {
+          userName: 'Claire Lambert',
+          trainingName: 'Spring Boot 3',
+          completed: false,
+          progress: 60,
+        },
+      ];
+
+  const trainingRows = searchQuery.trim()
+    ? allTrainingRows.filter((row) =>
+        row.userName.toLowerCase().includes(searchQuery.trim().toLowerCase())
+      )
+    : allTrainingRows;
+
   return (
     <Box className="animate-fade-in" sx={{ color: '#0f172a' }}>
       <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'Outfit', mb: error ? 1 : 3 }} className="gradient-text">
@@ -212,46 +322,86 @@ const DashboardAdmin = () => {
         </Grid>
       </Grid>
 
-      {/* Tableau récapitulatif par session */}
-      <Typography variant="h5" sx={{ fontWeight: 700, fontFamily: 'Outfit', mb: 2 }}>
-        Performance par session de formation
-      </Typography>
-      <TableContainer component={Paper} className="glass-panel" sx={{ background: 'rgba(255,255,255,0.9)' }}>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ borderBottom: '2px solid rgba(255,255,255,0.08)' }}>
-              <TableCell sx={{ color: '#9ca3af', fontWeight: 600 }}>Session de formation</TableCell>
-              <TableCell align="center" sx={{ color: '#9ca3af', fontWeight: 600 }}>Feedbacks reçus</TableCell>
-              <TableCell align="center" sx={{ color: '#9ca3af', fontWeight: 600 }}>Note moyenne</TableCell>
-              <TableCell align="center" sx={{ color: '#9ca3af', fontWeight: 600 }}>Évaluation</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(stats.feedbacksBySession || []).length === 0 ? (
+      <Paper className="glass-panel" sx={{ p: 3, background: 'rgba(255,255,255,0.9)' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 2 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            Suivi des formations des utilisateurs
+          </Typography>
+          <TextField
+            id="suivi-search-input"
+            size="small"
+            placeholder="Rechercher par nom..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: '#6366f1', fontSize: 20 }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              minWidth: 240,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 3,
+                background: 'rgba(99,102,241,0.06)',
+                '&:hover fieldset': { borderColor: '#6366f1' },
+                '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+              },
+            }}
+          />
+        </Box>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={4} align="center" sx={{ color: '#9ca3af' }}>
-                  Aucune session disponible
-                </TableCell>
+                <TableCell>Utilisateur</TableCell>
+                <TableCell>Formation</TableCell>
+                <TableCell>État</TableCell>
+                <TableCell>Progression</TableCell>
               </TableRow>
-            ) : (
-              (stats.feedbacksBySession || []).map((row, index) => (
-                <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 }, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <TableCell component="th" scope="row" sx={{ fontWeight: 600, color: '#f3f4f6' }}>
-                    {row.sessionName}
-                  </TableCell>
-                  <TableCell align="center" sx={{ color: '#f3f4f6' }}>{row.feedbackCount}</TableCell>
-                  <TableCell align="center" sx={{ color: '#f3f4f6', fontWeight: 700 }}>
-                    {row.averageRating} / 5
-                  </TableCell>
-                  <TableCell align="center" sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <Rating value={row.averageRating} readOnly precision={0.1} size="small" />
+            </TableHead>
+            <TableBody>
+              {trainingRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} align="center" sx={{ py: 3, color: '#64748b' }}>
+                    {searchQuery.trim()
+                      ? `Aucun utilisateur trouvé pour « ${searchQuery} ».`
+                      : 'Aucune donnée de suivi disponible pour le moment.'}
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                trainingRows.map((row, index) => (
+                  <TableRow key={`${row.userName}-${row.trainingName}-${index}`}>
+                    <TableCell>{row.userName}</TableCell>
+                    <TableCell>{row.trainingName}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={row.completed ? 'Terminé' : 'En cours'}
+                        color={row.completed ? 'success' : 'warning'}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={row.progress || 0}
+                          sx={{ flexGrow: 1, height: 8, borderRadius: 5 }}
+                        />
+                        <Typography variant="body2" sx={{ minWidth: 42, fontWeight: 600 }}>
+                          {Math.round(row.progress || 0)}%
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+
     </Box>
   );
 };

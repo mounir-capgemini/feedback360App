@@ -19,6 +19,7 @@ public class UserDTO {
     private String email;
     private String fullName;
     private Role role;
+    private Boolean enabled;
     private String photo;
     private LocalDateTime createdAt;
 }

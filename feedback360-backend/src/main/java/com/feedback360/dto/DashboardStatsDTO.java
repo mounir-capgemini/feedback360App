@@ -26,6 +26,8 @@ public class DashboardStatsDTO {
     private java.util.List<RatingDistribution> ratingDistribution = new java.util.ArrayList<>();
     @Builder.Default
     private java.util.List<MonthlyFeedback> monthlyFeedbacks = new java.util.ArrayList<>();
+    @Builder.Default
+    private java.util.List<UserTrainingProgress> userTrainingProgress = new java.util.ArrayList<>();
 
     @Getter
     @Setter
@@ -56,5 +58,17 @@ public class DashboardStatsDTO {
     public static class MonthlyFeedback {
         private String month;
         private long count;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class UserTrainingProgress {
+        private String userName;
+        private String trainingName;
+        private boolean completed;
+        private double progress;
     }
 }

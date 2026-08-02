@@ -151,7 +151,7 @@ const NotificationsPage = () => {
                     />
                   </Box>
 
-                  <Box display="flex" gap={1.5} alignItems="center" alignSelf={{ xs: 'flex-end', sm: 'center' }}>
+                  <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', alignSelf: { xs: 'flex-end', sm: 'center' } }}>
                     {isPending && (
                       <Tooltip title="Marquer comme lu">
                         <IconButton

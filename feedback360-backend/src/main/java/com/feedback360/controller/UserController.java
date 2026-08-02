@@ -1,6 +1,7 @@
 package com.feedback360.controller;
 
 import com.feedback360.dto.ProfileUpdateDTO;
+import com.feedback360.dto.UserAdminUpdateDTO;
 import com.feedback360.dto.UserDTO;
 import com.feedback360.entity.User;
 import com.feedback360.mapper.UserMapper;
@@ -58,5 +59,12 @@ public class UserController {
         User currentUser = authService.getCurrentUser();
         UserDTO updated = authService.updateProfile(dto, currentUser);
         return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Modifier un utilisateur par l'admin")
+    public ResponseEntity<UserDTO> updateUserByAdmin(@PathVariable Long userId, @Valid @RequestBody UserAdminUpdateDTO dto) {
+        return ResponseEntity.ok(authService.updateUserByAdmin(userId, dto));
     }
 }

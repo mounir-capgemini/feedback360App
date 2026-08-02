@@ -82,7 +82,7 @@ const SessionDetailPage = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <CircularProgress color="primary" />
       </Box>
     );
@@ -116,8 +116,8 @@ const SessionDetailPage = () => {
 
               <Box display="flex" flexDirection="column" gap={2}>
                 <Box>
-                  <Typography variant="caption" color="text.secondary">ID TalentUp Module</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 600 }}>{session.talentUpModuleId}</Typography>
+                  <Typography variant="caption" color="text.secondary"></Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 600 }}></Typography>
                 </Box>
                 <Box>
                   <Typography variant="caption" color="text.secondary">Type</Typography>
@@ -177,7 +177,7 @@ const SessionDetailPage = () => {
         {/* Feedbacks reçus */}
         <Grid item xs={12} md={7}>
           <Paper className="glass-panel" sx={{ p: 4, background: 'rgba(255,255,255,0.9)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 700, fontFamily: 'Outfit' }}>
                 Avis et commentaires ({totalElements})
               </Typography>
@@ -185,7 +185,7 @@ const SessionDetailPage = () => {
             <Divider sx={{ mb: 2, borderColor: 'rgba(59,130,246,0.12)' }} />
 
             {feedbacks.length === 0 ? (
-              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" flex={1} py={4}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, py: 4 }}>
                 <StarIcon sx={{ fontSize: 50, color: 'text.secondary', mb: 1, opacity: 0.5 }} />
                 <Typography variant="body2" color="text.secondary" textAlign="center">
                   Aucun feedback n'a été soumis pour cette session pour le moment.
@@ -197,7 +197,7 @@ const SessionDetailPage = () => {
                   {feedbacks.map((fb) => (
                     <Card key={fb.id} sx={{ mb: 2, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 2 }}>
                       <CardContent sx={{ p: 2 }}>
-                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                           <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#a5b4fc' }}>
                             {fb.userName || 'Participant Anonyme'}
                           </Typography>

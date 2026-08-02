@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Service pour les statistiques du dashboard admin.
  */
@@ -108,6 +109,27 @@ public class DashboardService {
                 // Ignore query failure fallback
             }
             stats.setMonthlyFeedbacks(monthlyFeedbacks);
+
+            List<DashboardStatsDTO.UserTrainingProgress> trainingProgress = new ArrayList<>();
+            try {
+                List<com.feedback360.entity.SuiviFeedback> suivis = suiviFeedbackRepository.findAll();
+                for (com.feedback360.entity.SuiviFeedback suivi : suivis) {
+                    if (suivi.getUser() == null || suivi.getTrainingSession() == null) {
+                        continue;
+                    }
+                    boolean completed = suivi.getStatus() == FeedbackStatus.SOUMIS;
+                    double progress = completed ? 100.0 : 50.0;
+                    trainingProgress.add(DashboardStatsDTO.UserTrainingProgress.builder()
+                            .userName(suivi.getUser().getFullName())
+                            .trainingName(suivi.getTrainingSession().getName())
+                            .completed(completed)
+                            .progress(progress)
+                            .build());
+                }
+            } catch (Exception e) {
+                // Ignore progress generation failure fallback
+            }
+            stats.setUserTrainingProgress(trainingProgress);
 
         } catch (Exception e) {
             // Guarantee a valid stats object is returned

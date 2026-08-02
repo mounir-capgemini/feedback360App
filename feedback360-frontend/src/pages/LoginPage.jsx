@@ -58,7 +58,7 @@ const LoginPage = ({ isAdminFlow = false }) => {
       };
       
       login(userData, res.token);
-      setToastMessage('Connexion réussie !');
+      setToastMessage('Connexion réussie ! Formation Angular Fundamentals finalisée.');
       setShowToast(true);
 
       let targetPath = location.state?.from?.pathname;
@@ -73,7 +73,10 @@ const LoginPage = ({ isAdminFlow = false }) => {
       }
 
       setTimeout(() => {
-        navigate(targetPath, { replace: true });
+        navigate(targetPath, {
+          replace: true,
+          state: { successMessage: 'Formation Angular Fundamentals finalisée.' },
+        });
       }, 1000);
     } catch (err) {
       console.error(err);
@@ -88,10 +91,12 @@ const LoginPage = ({ isAdminFlow = false }) => {
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+      }}
       className="animate-fade-in"
     >
       <Card
@@ -105,7 +110,7 @@ const LoginPage = ({ isAdminFlow = false }) => {
         }}
       >
         <CardContent sx={{ p: 4 }}>
-          <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
             <Typography
               variant="h4"
               component="h1"

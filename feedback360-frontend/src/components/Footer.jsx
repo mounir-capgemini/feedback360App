@@ -36,7 +36,7 @@ const Footer = ({ dark = true }) => {
         <Grid container spacing={4} sx={{ mb: 4 }}>
           {/* Brand Column */}
           <Grid item xs={12} md={5}>
-            <Box display="flex" alignItems="center" gap={1} mb={1.5}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
               <Typography
                 variant="h6"
                 sx={{
@@ -263,11 +263,11 @@ const Footer = ({ dark = true }) => {
 
         <Divider sx={{ borderColor: dark ? '#1e293b' : 'rgba(59, 130, 246, 0.15)', mb: 3 }} />
 
-        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems="center" gap={2}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
           <Typography variant="body2" color={dark ? '#64748b' : '#94a3b8'} sx={{ fontSize: '0.85rem' }}>
             &copy; {new Date().getFullYear()} Feedback360. Tous droits réservés. Intégré avec TalentUp.
           </Typography>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <SecurityIcon sx={{ fontSize: '1rem', color: dark ? '#64748b' : '#94a3b8' }} />
             <Typography variant="caption" color={dark ? '#64748b' : '#94a3b8'}>
               Conforme RGPD & Qualiopi
