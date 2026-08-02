@@ -33,7 +33,7 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
       items.push({ text: 'Dashboard Admin', icon: <DashboardIcon />, path: '/admin/dashboard' });
       items.push({ text: 'Utilisateurs', icon: <PeopleIcon />, path: '/admin/users' });
       items.push({ text: 'Sessions de formation', icon: <SchoolIcon />, path: '/admin/formations' });
-      items.push({ text: 'Historique Feedbacks', icon: <FeedbackIcon />, path: '/admin/feedbacks' });
+      items.push({ text: 'Suivi Feedback', icon: <FeedbackIcon />, path: '/admin/feedbacks' });
       items.push({ text: 'Statistiques', icon: <ChartIcon />, path: '/statistics' });
       items.push({ text: 'Notifications', icon: <NotificationsIcon />, path: '/admin/notifications' });
     } else {

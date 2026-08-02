@@ -308,7 +308,7 @@ const Navbar = ({ handleDrawerToggle, publicMode = false }) => {
                           Mon Profil
                         </MenuItem>
                         <MenuItem onClick={() => { handleClose(); navigate('/admin/feedbacks'); }} sx={{ fontSize: '0.875rem' }}>
-                          Historique Feedbacks
+                          Suivi Feedback
                         </MenuItem>
                       </>
                     ) : (

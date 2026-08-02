@@ -76,7 +76,7 @@ const sampleAdminFeedbacks = [
 
 /**
  * ============================================================================
- * PAGE : AdminFeedbacksPage (Historique & Export des Feedbacks - Admin)
+ * PAGE : AdminFeedbacksPage (Suivi Feedback - Admin)
  * ============================================================================
  * Rôle : Permet aux administrateurs d'analyser l'ensemble des retours 
  *        et commentaires laissés par les participants.
@@ -194,7 +194,7 @@ const AdminFeedbacksPage = () => {
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'Outfit', mb: 0.5 }} className="gradient-text">
-            Historique des Feedbacks
+            Suivi Feedback
           </Typography>
           <Typography variant="body1" color="text.secondary">
             
