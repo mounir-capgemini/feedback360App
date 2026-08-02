@@ -137,6 +137,7 @@ public class AuthService {
     }
 
     @Transactional
+    @SuppressWarnings("null")
     public UserDTO updateUserByAdmin(Long userId, UserAdminUpdateDTO dto) {
         User user = userRepository.findById(Objects.requireNonNull(userId, "userId must not be null"))
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
