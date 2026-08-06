@@ -17,6 +17,7 @@ public class DefaultUserSeeder implements ApplicationRunner {
     private final UserRepository userRepository;
     private final TrainingSessionRepository trainingSessionRepository;
     private final SuiviFeedbackRepository suiviFeedbackRepository;
+    private final NotificationRepository notificationRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -55,6 +56,17 @@ public class DefaultUserSeeder implements ApplicationRunner {
                             .build();
                     suiviFeedbackRepository.save(suivi);
                 }
+                
+                // Créer une notification pour le participant si elle n'existe pas
+                if (notificationRepository.findByUserIdAndType(savedParticipant.getId(), NotificationType.FEEDBACK_REQUEST).isEmpty()) {
+                    Notification notification = Notification.builder()
+                            .user(savedParticipant)
+                            .message("Nouveau feedback demandé pour la session : " + session.getName())
+                            .type(NotificationType.FEEDBACK_REQUEST)
+                            .status(NotificationStatus.PENDING)
+                            .build();
+                    notificationRepository.save(notification);
+                }
             }
         }
 
@@ -90,6 +102,17 @@ public class DefaultUserSeeder implements ApplicationRunner {
                             .status(status)
                             .build();
                     suiviFeedbackRepository.save(Objects.requireNonNull(suivi));
+                }
+                
+                // Créer une notification pour le participant si elle n'existe pas
+                if (notificationRepository.findByUserIdAndType(savedParticipant.getId(), NotificationType.FEEDBACK_REQUEST).isEmpty()) {
+                    Notification notification = Notification.builder()
+                            .user(savedParticipant)
+                            .message("Nouveau feedback demandé pour la session : " + session.getName())
+                            .type(NotificationType.FEEDBACK_REQUEST)
+                            .status(NotificationStatus.PENDING)
+                            .build();
+                    notificationRepository.save(notification);
                 }
             }
         }

@@ -37,10 +37,14 @@ const DashboardParticipant = () => {
           dashboardService.getParticipantStatistics(),
         ]);
         setSessions(sessionData || []);
-        setNotifications(notificationData.content || []);
+        // Handle both Page object (with content) and direct array responses
+        const notificationsList = Array.isArray(notificationData) 
+          ? notificationData 
+          : (notificationData?.content || []);
+        setNotifications(notificationsList);
         setStats(statsData);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching dashboard data:', err);
         setError('Impossible de charger les données du tableau de bord.');
       } finally {
         setLoading(false);

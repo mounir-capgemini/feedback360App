@@ -2,10 +2,13 @@ package com.feedback360.repository;
 
 import com.feedback360.entity.Notification;
 import com.feedback360.entity.NotificationStatus;
+import com.feedback360.entity.NotificationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * Repository pour l'entité Notification.
@@ -18,4 +21,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countByUserIdAndStatus(Long userId, NotificationStatus status);
 
     long countByStatus(NotificationStatus status);
+
+    List<Notification> findByUserIdAndType(Long userId, NotificationType type);
 }
