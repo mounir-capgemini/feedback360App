@@ -41,7 +41,7 @@ public class FeedbackController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTIONNAIRE')")
     @Operation(summary = "Lister tous les feedbacks (Admin uniquement)")
     public ResponseEntity<Page<FeedbackDTO>> getAllFeedbacks(
             @RequestParam(defaultValue = "0") int page,
@@ -84,7 +84,7 @@ public class FeedbackController {
     }
 
     @GetMapping("/export")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTIONNAIRE')")
     @Operation(summary = "Exporter tous les feedbacks en format Excel (Admin uniquement)")
     public ResponseEntity<byte[]> exportFeedbacksToExcel() {
         try {

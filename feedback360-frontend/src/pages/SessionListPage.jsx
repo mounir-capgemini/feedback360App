@@ -271,16 +271,21 @@ const SessionListPage = () => {
                               variant="contained"
                               size="small"
                               startIcon={<ReviewIcon />}
+                              disabled={session.hasSubmittedFeedback}
                               onClick={() => navigate(`/feedback/${session.id}`)}
                               sx={{
                                 borderRadius: 2,
-                                background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                                background: session.hasSubmittedFeedback
+                                  ? 'rgba(100, 116, 139, 0.3)'
+                                  : 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
                                 '&:hover': {
-                                  background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                                  background: session.hasSubmittedFeedback
+                                    ? 'rgba(100, 116, 139, 0.3)'
+                                    : 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
                                 },
                               }}
                             >
-                              Donner avis
+                              {session.hasSubmittedFeedback ? 'Avis soumis' : 'Donner avis'}
                             </Button>
                           )}
                         </Box>

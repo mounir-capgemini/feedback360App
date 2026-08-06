@@ -31,6 +31,7 @@ public class TalentUpImportService {
     private final SuiviFeedbackRepository suiviFeedbackRepository;
     private final NotificationRepository notificationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     private static <T> T requireNonNull(@Nullable T object, String message) {
         return Objects.requireNonNull(object, message);
@@ -141,6 +142,10 @@ public class TalentUpImportService {
         Notification safeNotification = Objects.requireNonNull(notification, "Notification ne peut pas être null");
         notificationRepository.save(safeNotification);
         result.put("notificationId", Objects.requireNonNull(notification.getId(), "Notification id ne peut pas être null"));
+
+        // 7. Envoyer l'email de demande de feedback au participant
+        emailService.sendFeedbackRequestEmail(user, session);
+        result.put("emailSent", true);
 
         result.put("status", "SUCCESS");
         log.info("Import TalentUp terminé avec succès pour: {}", user.getEmail());

@@ -62,13 +62,13 @@ const LoginPage = ({ isAdminFlow = false }) => {
       setShowToast(true);
 
       let targetPath = location.state?.from?.pathname;
-      if (res.role === 'ADMIN') {
+      if (res.role === 'ADMIN' || res.role === 'GESTIONNAIRE') {
         if (!targetPath || targetPath === '/formations' || targetPath === '/dashboard' || targetPath === '/my-feedbacks' || targetPath === '/unauthorized') {
           targetPath = '/admin/dashboard';
         }
       } else {
         if (!targetPath || targetPath.startsWith('/admin') || targetPath === '/unauthorized') {
-          targetPath = '/formations';
+          targetPath = '/dashboard';
         }
       }
 

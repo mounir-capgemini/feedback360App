@@ -11,7 +11,6 @@ import SessionDetailPage from '../pages/SessionDetailPage';
 import FeedbackPage from '../pages/FeedbackPage';
 import MyFeedbacksPage from '../pages/MyFeedbacksPage';
 import NotificationsPage from '../pages/NotificationsPage';
-import StatisticsPage from '../pages/StatisticsPage';
 import PrivateRoute from '../components/PrivateRoute';
 import { USER_ROLE } from '../utils/constants';
 
@@ -22,6 +21,7 @@ import ProfilePage from '../pages/ProfilePage';
 import AdminUsersPage from '../pages/AdminUsersPage';
 import AdminFeedbacksPage from '../pages/AdminFeedbacksPage';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
+import TalentUpEmailPage from '../pages/TalentUpEmailPage';
 
 const AppRoutes = () => {
   const { user, isAuthenticated } = useAuth();
@@ -33,10 +33,10 @@ const AppRoutes = () => {
         path="/"
         element={
           isAuthenticated() ? (
-            user?.role === USER_ROLE.ADMIN ? (
+            [USER_ROLE.ADMIN, USER_ROLE.GESTIONNAIRE].includes(user?.role) ? (
               <Navigate to="/admin/dashboard" replace />
             ) : (
-              <Navigate to="/formations" replace />
+              <Navigate to="/dashboard" replace />
             )
           ) : (
             <Navigate to="/login" replace />
@@ -45,16 +45,19 @@ const AppRoutes = () => {
       />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
+      {/* Page Email de fin de formation (lien depuis l'email TalentUp) */}
+      <Route path="/email/feedback" element={<TalentUpEmailPage />} />
+
       {/* Routes d'authentification publiques */}
       <Route element={<AuthLayout />}>
         <Route
           path="/login"
           element={
             isAuthenticated() ? (
-              user?.role === USER_ROLE.ADMIN ? (
+              [USER_ROLE.ADMIN, USER_ROLE.GESTIONNAIRE].includes(user?.role) ? (
                 <Navigate to="/admin/dashboard" replace />
               ) : (
-                <Navigate to="/formations" replace />
+                <Navigate to="/dashboard" replace />
               )
             ) : (
               <LoginPage />
@@ -65,10 +68,10 @@ const AppRoutes = () => {
           path="/register"
           element={
             isAuthenticated() ? (
-              user?.role === USER_ROLE.ADMIN ? (
+              [USER_ROLE.ADMIN, USER_ROLE.GESTIONNAIRE].includes(user?.role) ? (
                 <Navigate to="/admin/dashboard" replace />
               ) : (
-                <Navigate to="/formations" replace />
+                <Navigate to="/dashboard" replace />
               )
             ) : (
               <RegisterPage />
@@ -79,10 +82,10 @@ const AppRoutes = () => {
           path="/admin/login"
           element={
             isAuthenticated() ? (
-              user?.role === USER_ROLE.ADMIN ? (
+              [USER_ROLE.ADMIN, USER_ROLE.GESTIONNAIRE].includes(user?.role) ? (
                 <Navigate to="/admin/dashboard" replace />
               ) : (
-                <Navigate to="/formations" replace />
+                <Navigate to="/dashboard" replace />
               )
             ) : (
               <LoginPage isAdminFlow={true} />
@@ -140,11 +143,11 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Dashboard Admin (admin uniquement) */}
+        {/* Dashboard Admin/Gestionnaire */}
         <Route
           path="/admin/dashboard"
           element={
-            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
+            <PrivateRoute requiredRole={[USER_ROLE.ADMIN, USER_ROLE.GESTIONNAIRE]}>
               <DashboardAdmin />
             </PrivateRoute>
           }
@@ -154,7 +157,7 @@ const AppRoutes = () => {
         <Route
           path="/admin/users"
           element={
-            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
+            <PrivateRoute requiredRole={[USER_ROLE.ADMIN, USER_ROLE.GESTIONNAIRE]}>
               <AdminUsersPage />
             </PrivateRoute>
           }
@@ -164,7 +167,7 @@ const AppRoutes = () => {
         <Route
           path="/admin/formations"
           element={
-            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
+            <PrivateRoute requiredRole={[USER_ROLE.ADMIN, USER_ROLE.GESTIONNAIRE]}>
               <SessionListPage />
             </PrivateRoute>
           }
@@ -174,18 +177,8 @@ const AppRoutes = () => {
         <Route
           path="/admin/feedbacks"
           element={
-            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
+            <PrivateRoute requiredRole={[USER_ROLE.ADMIN, USER_ROLE.GESTIONNAIRE]}>
               <AdminFeedbacksPage />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Statistiques (admin uniquement) */}
-        <Route
-          path="/statistics"
-          element={
-            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
-              <StatisticsPage />
             </PrivateRoute>
           }
         />
@@ -194,7 +187,7 @@ const AppRoutes = () => {
         <Route
           path="/admin/notifications"
           element={
-            <PrivateRoute requiredRole={USER_ROLE.ADMIN}>
+            <PrivateRoute requiredRole={[USER_ROLE.ADMIN, USER_ROLE.GESTIONNAIRE]}>
               <NotificationsPage />
             </PrivateRoute>
           }

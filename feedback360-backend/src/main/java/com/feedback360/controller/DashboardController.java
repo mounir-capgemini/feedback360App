@@ -26,7 +26,7 @@ public class DashboardController {
     private final AuthService authService;
 
     @GetMapping("/statistics")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTIONNAIRE')")
     @Operation(summary = "Statistiques globales du dashboard")
     public ResponseEntity<DashboardStatsDTO> getStatistics() {
         return ResponseEntity.ok(dashboardService.getStatistics());

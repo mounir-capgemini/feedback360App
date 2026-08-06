@@ -5,5 +5,6 @@ package com.feedback360.entity;
  */
 public enum Role {
     ADMIN,
+    GESTIONNAIRE,
     PARTICIPANT
 }

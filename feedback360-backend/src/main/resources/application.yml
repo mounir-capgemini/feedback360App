@@ -25,10 +25,27 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:feedback360.app@gmail.com}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        debug: false
+
 # JWT Configuration
 jwt:
   secret: Feedback360SecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong2024SecureKey
   expiration: 86400000  # 24 heures en millisecondes
+
+# Frontend URL for email links
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
 
 # Swagger / OpenAPI
 springdoc:

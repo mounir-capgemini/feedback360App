@@ -27,8 +27,9 @@ const PrivateRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requiredRole && user?.role !== requiredRole) {
-    if (user?.role === 'ADMIN') {
+  const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+  if (requiredRole && !allowedRoles.includes(user?.role)) {
+    if (user?.role === 'ADMIN' || user?.role === 'GESTIONNAIRE') {
       if (location.pathname === '/formations') {
         return <Navigate to="/admin/formations" replace />;
       }

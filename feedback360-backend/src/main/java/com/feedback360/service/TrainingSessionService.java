@@ -7,6 +7,7 @@ import com.feedback360.exception.ResourceNotFoundException;
 import com.feedback360.mapper.TrainingSessionMapper;
 import com.feedback360.repository.TrainingSessionRepository;
 import com.feedback360.repository.SuiviFeedbackRepository;
+import com.feedback360.repository.FeedbackRepository;
 import com.feedback360.entity.FeedbackStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ public class TrainingSessionService {
 
     private final TrainingSessionRepository sessionRepository;
     private final TrainingSessionMapper sessionMapper;
+    private final FeedbackRepository feedbackRepository;
 
     /**
      * Récupère toutes les sessions avec pagination et recherche optionnelle.
@@ -102,6 +104,10 @@ public class TrainingSessionService {
                             session.getSuiviFeedbacks().stream()
                                     .filter(s -> s.getStatus() == FeedbackStatus.EN_ATTENTE)
                                     .count()
+                    );
+                    // Vérifier si le participant a déjà soumis un feedback pour cette session
+                    dto.setHasSubmittedFeedback(
+                            !feedbackRepository.findByTrainingSessionIdAndUserId(session.getId(), userId).isEmpty()
                     );
                     return dto;
                 })

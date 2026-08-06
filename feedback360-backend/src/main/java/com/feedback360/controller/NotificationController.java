@@ -29,7 +29,7 @@ public class NotificationController {
     private final AuthService authService;
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTIONNAIRE')")
     @Operation(summary = "Lister toutes les notifications (Admin uniquement)")
     public ResponseEntity<Page<NotificationDTO>> getAllNotifications(
             @RequestParam(defaultValue = "0") int page,

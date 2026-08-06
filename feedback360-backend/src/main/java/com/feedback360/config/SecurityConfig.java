@@ -59,19 +59,21 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints publics
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers("/auth/admin/**").hasAnyRole("ADMIN", "GESTIONNAIRE")
                         .requestMatchers("/api/talentup/**").permitAll()
+                        .requestMatchers("/api/email/**").permitAll()
                         .requestMatchers("/api/sessions/public").permitAll()
                         // Swagger
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         // Dashboard — séparé par rôle
-                        .requestMatchers("/api/dashboard/statistics").hasRole("ADMIN")
+                        .requestMatchers("/api/dashboard/statistics").hasAnyRole("ADMIN", "GESTIONNAIRE")
                         .requestMatchers("/api/dashboard/participant").hasRole("PARTICIPANT")
                         // Admin-only endpoints
-                        .requestMatchers("/api/users/profile").hasAnyRole("ADMIN", "PARTICIPANT")
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
-                        .requestMatchers("/api/feedback/all").hasRole("ADMIN")
-                        .requestMatchers("/api/notifications/all").hasRole("ADMIN")
+                        .requestMatchers("/api/users/profile").hasAnyRole("ADMIN", "GESTIONNAIRE", "PARTICIPANT")
+                        .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "GESTIONNAIRE")
+                        .requestMatchers("/api/feedback/all").hasAnyRole("ADMIN", "GESTIONNAIRE")
+                        .requestMatchers("/api/notifications/all").hasAnyRole("ADMIN", "GESTIONNAIRE")
                         // Tout le reste nécessite une authentification
                         .anyRequest().authenticated()
                 );

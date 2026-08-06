@@ -5,7 +5,6 @@ import {
   School as SchoolIcon,
   RateReview as FeedbackIcon,
   Notifications as NotificationsIcon,
-  BarChart as ChartIcon,
   People as PeopleIcon,
   Person as PersonIcon
 } from '@mui/icons-material';
@@ -29,12 +28,11 @@ const Sidebar = ({ mobileOpen, handleDrawerToggle }) => {
   const getMenuItems = () => {
     const items = [];
 
-    if (user?.role === 'ADMIN') {
+    if (user?.role === 'ADMIN' || user?.role === 'GESTIONNAIRE') {
       items.push({ text: 'Dashboard Admin', icon: <DashboardIcon />, path: '/admin/dashboard' });
       items.push({ text: 'Utilisateurs', icon: <PeopleIcon />, path: '/admin/users' });
       items.push({ text: 'Sessions de formation', icon: <SchoolIcon />, path: '/admin/formations' });
       items.push({ text: 'Suivi Feedback', icon: <FeedbackIcon />, path: '/admin/feedbacks' });
-      items.push({ text: 'Statistiques', icon: <ChartIcon />, path: '/statistics' });
       items.push({ text: 'Notifications', icon: <NotificationsIcon />, path: '/admin/notifications' });
     } else {
       items.push({ text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' });

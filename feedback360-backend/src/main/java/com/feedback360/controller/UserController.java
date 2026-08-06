@@ -31,7 +31,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTIONNAIRE')")
     @Operation(summary = "Lister tous les utilisateurs (Admin uniquement)")
     public ResponseEntity<Page<UserDTO>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTIONNAIRE')")
     @Operation(summary = "Modifier un utilisateur par l'admin")
     public ResponseEntity<UserDTO> updateUserByAdmin(@PathVariable Long userId, @Valid @RequestBody UserAdminUpdateDTO dto) {
         return ResponseEntity.ok(authService.updateUserByAdmin(userId, dto));

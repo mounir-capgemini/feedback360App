@@ -56,7 +56,7 @@ const AdminUsersPage = () => {
     fullName: '',
     email: '',
     password: '',
-    role: 'PARTICIPANT',
+    role: 'GESTIONNAIRE',
     enabled: true,
   });
 
@@ -126,7 +126,7 @@ const AdminUsersPage = () => {
       fullName: '',
       email: '',
       password: '',
-      role: 'PARTICIPANT',
+      role: 'GESTIONNAIRE',
       enabled: true,
     });
   };
@@ -149,6 +149,7 @@ const AdminUsersPage = () => {
         fullName: userForm.fullName,
         email: userForm.email,
         password: userForm.password,
+        role: userForm.role,
       });
       setSuccessMessage('Utilisateur ajouté avec succès.');
       setIsCreateDialogOpen(false);
@@ -156,7 +157,8 @@ const AdminUsersPage = () => {
       await fetchUsers();
     } catch (err) {
       console.error(err);
-      setError('Impossible d’ajouter cet utilisateur.');
+      const errorMsg = err.response?.data?.message || 'Impossible d’ajouter cet utilisateur.';
+      setError(errorMsg);
     } finally {
       setSubmitting(false);
     }
@@ -221,9 +223,11 @@ const AdminUsersPage = () => {
                     label="Filtrer par rôle"
                     onChange={(e) => setRoleFilter(e.target.value)}
                   >
-                    <MenuItem value="ADMIN">Admin</MenuItem>
-                    <MenuItem value="PARTICIPANT">Participant</MenuItem>
-                  </Select>
+                     <MenuItem value="ALL">Tous les rôles</MenuItem>
+                     <MenuItem value="ADMIN">Admin</MenuItem>
+                     <MenuItem value="GESTIONNAIRE">Gestionnaire</MenuItem>
+                     <MenuItem value="PARTICIPANT">Participant</MenuItem>
+                   </Select>
                 </FormControl>
               </Box>
             </Box>
@@ -338,7 +342,7 @@ const AdminUsersPage = () => {
                 label="Rôle"
                 onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
               >
-                <MenuItem value="PARTICIPANT">Participant</MenuItem>
+                <MenuItem value="GESTIONNAIRE">Gestionnaire</MenuItem>
                 <MenuItem value="ADMIN">Admin</MenuItem>
               </Select>
             </FormControl>

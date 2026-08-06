@@ -38,4 +38,12 @@ public class AuthController {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/admin/create")
+    @Operation(summary = "Créer un utilisateur admin/gestionnaire (Admin uniquement)",
+               description = "Crée un utilisateur avec le rôle ADMIN ou GESTIONNAIRE. Le rôle PARTICIPANT est interdit.")
+    public ResponseEntity<AuthResponse> createUserByAdmin(@Valid @RequestBody @NonNull RegisterRequest request) {
+        AuthResponse response = authService.createUserByAdmin(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 }

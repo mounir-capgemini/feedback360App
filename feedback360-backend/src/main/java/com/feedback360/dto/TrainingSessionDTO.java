@@ -27,4 +27,5 @@ public class TrainingSessionDTO {
     private LocalDateTime createdAt;
     private long feedbackCount;
     private long pendingFeedbackCount;
+    private boolean hasSubmittedFeedback;
 }

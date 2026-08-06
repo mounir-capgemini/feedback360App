@@ -43,6 +43,8 @@ public class AuthService {
 
     /**
      * Inscription d'un nouvel utilisateur.
+     * Le rôle par défaut est PARTICIPANT (inscription publique).
+     * Les rôles ADMIN et GESTIONNAIRE ne peuvent être créés que via l'endpoint admin.
      */
     @SuppressWarnings("null")
     public AuthResponse register(@NonNull RegisterRequest request) {
@@ -54,12 +56,57 @@ public class AuthService {
             throw new BadRequestException("Cet email est déjà utilisé");
         }
 
-        // Créer le nouvel utilisateur
+        // Créer le nouvel utilisateur - toujours PARTICIPANT pour l'inscription publique
         User user = User.builder()
                 .fullName(request.getFullName())
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .role(Role.PARTICIPANT)
+                .build();
+
+        User savedUser = requireNonNullUser(userRepository.save(user));
+
+        // Générer le token JWT
+        String token = tokenProvider.generateTokenFromEmail(savedUser.getEmail());
+
+        return AuthResponse.builder()
+                .token(token)
+                .userId(savedUser.getId())
+                .email(savedUser.getEmail())
+                .fullName(savedUser.getFullName())
+                .role(savedUser.getRole().name())
+                .build();
+    }
+
+    /**
+     * Création d'un utilisateur par un administrateur.
+     * Seuls les rôles ADMIN et GESTIONNAIRE peuvent être créés.
+     * Le rôle PARTICIPANT est interdit (les participants sont créés via TalentUp).
+     */
+    @SuppressWarnings("null")
+    public AuthResponse createUserByAdmin(@NonNull RegisterRequest request) {
+        String email = requireNonNullString(request.getEmail(), "Email must not be null");
+        String password = requireNonNullString(request.getPassword(), "Password must not be null");
+
+        // Vérifier si l'email est déjà utilisé
+        if (userRepository.existsByEmail(email)) {
+            throw new BadRequestException("Cet email est déjà utilisé");
+        }
+
+        // Déterminer le rôle - par défaut GESTIONNAIRE
+        Role role = request.getRole() != null ? request.getRole() : Role.GESTIONNAIRE;
+
+        // Interdire la création de participants via l'admin
+        if (role == Role.PARTICIPANT) {
+            throw new BadRequestException("Les participants sont créés automatiquement via l'intégration TalentUp");
+        }
+
+        // Créer le nouvel utilisateur
+        User user = User.builder()
+                .fullName(request.getFullName())
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .role(role)
                 .build();
 
         User savedUser = requireNonNullUser(userRepository.save(user));

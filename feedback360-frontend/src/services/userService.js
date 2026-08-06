@@ -26,7 +26,7 @@ export const userService = {
   },
 
   createUser: async (userData) => {
-    const response = await api.post('/auth/register', userData);
+    const response = await api.post('/auth/admin/create', userData);
     return response.data;
   },
 
