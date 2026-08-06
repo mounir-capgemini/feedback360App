@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,9 +41,10 @@ class DefaultUserSeederTest {
     @Test
     @SuppressWarnings("null")
     void shouldSeedDefaultAdminWhenNoUserExists() {
+        when(userRepository.existsByEmail(anyString())).thenReturn(true);
         when(userRepository.existsByEmail("admin@feedback360.com")).thenReturn(false);
-        when(userRepository.existsByEmail("participant@feedback360.com")).thenReturn(true);
         when(passwordEncoder.encode("admin123")).thenReturn("encoded-password");
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         defaultUserSeeder.run(new DefaultApplicationArguments(new String[0]));
 
