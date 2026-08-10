@@ -30,41 +30,45 @@ public class DefaultUserSeeder implements ApplicationRunner {
     @SuppressWarnings("null")
     public void run(org.springframework.boot.ApplicationArguments args) {
         // Participant principal Capgemini : mounir.abhari@capgemini.com
-        if (!userRepository.existsByEmail("mounir.abhari@capgemini.com")) {
-            User mounirUser = User.builder()
-                    .fullName("Mounir Abhari")
-                    .email("mounir.abhari@capgemini.com")
-                    .password(passwordEncoder.encode("mounir123"))
-                    .role(Role.PARTICIPANT)
-                    .build();
+        User mounirUser = userRepository.findByEmail("mounir.abhari@capgemini.com")
+                .orElseGet(() -> {
+                    User newMounir = User.builder()
+                            .fullName("Mounir Abhari")
+                            .email("mounir.abhari@capgemini.com")
+                            .password(passwordEncoder.encode("mounir123"))
+                            .role(Role.PARTICIPANT)
+                            .build();
+                    return userRepository.save(newMounir);
+                });
 
-            User savedMounir = userRepository.save(mounirUser);
+        Optional<TrainingSession> sessionOpt = trainingSessionRepository.findByTalentUpModuleId(192L)
+                .or(() -> trainingSessionRepository.findByNameContainingIgnoreCase("Angular").stream().findFirst());
 
-            Optional<TrainingSession> sessionOpt = trainingSessionRepository.findByTalentUpModuleId(192L)
-                    .or(() -> trainingSessionRepository.findByNameContainingIgnoreCase("Angular").stream().findFirst());
+        if (sessionOpt.isPresent()) {
+            TrainingSession session = sessionOpt.get();
 
-            if (sessionOpt.isPresent()) {
-                TrainingSession session = sessionOpt.get();
-
+            if (suiviFeedbackRepository.findByUserIdAndTrainingSessionId(mounirUser.getId(), session.getId()).isEmpty()) {
                 SuiviFeedback suivi = SuiviFeedback.builder()
-                        .user(savedMounir)
+                        .user(mounirUser)
                         .trainingSession(session)
                         .status(FeedbackStatus.EN_ATTENTE)
                         .build();
                 suiviFeedbackRepository.save(suivi);
+            }
 
+            if (notificationRepository.findByUserIdAndType(mounirUser.getId(), NotificationType.FEEDBACK_REQUEST).isEmpty()) {
                 Notification notification = Notification.builder()
-                        .user(savedMounir)
+                        .user(mounirUser)
                         .message("Nouveau feedback demandé pour la session : " + session.getName())
                         .type(NotificationType.FEEDBACK_REQUEST)
                         .status(NotificationStatus.PENDING)
                         .build();
                 notificationRepository.save(notification);
-
-                // Envoi automatique de l'email TalentUp à mounir.abhari@capgemini.com avec le lien vers la page de login
-                String loginLink = frontendUrl + "/login";
-                emailService.sendTalentUpInvitationEmail(savedMounir, session, loginLink);
             }
+
+            // Toujours envoyer l'email TalentUp à mounir.abhari@capgemini.com à chaque relance de l'application
+            String loginLink = frontendUrl + "/login";
+            emailService.sendTalentUpInvitationEmail(mounirUser, session, loginLink);
         }
         if (!userRepository.existsByEmail("admin@feedback360.com")) {
             User admin = User.builder()
