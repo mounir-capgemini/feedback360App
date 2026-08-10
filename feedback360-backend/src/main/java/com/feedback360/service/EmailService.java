@@ -29,7 +29,7 @@ public class EmailService {
     @Value("${app.frontend-url:http://localhost:5173}")
     private String frontendUrl;
 
-    @Value("${spring.mail.username:feedback360.app@gmail.com}")
+    @Value("${spring.mail.username:mounir.abhari@capgemini.com}")
     private String fromEmail;
 
     /**

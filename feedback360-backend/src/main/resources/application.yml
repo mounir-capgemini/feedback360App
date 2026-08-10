@@ -26,9 +26,9 @@ spring:
     baseline-on-migrate: true
 
   mail:
-    host: ${MAIL_HOST:smtp-mail.outlook.com}
+    host: ${MAIL_HOST:smtp.office365.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:feedback360.app@gmail.com}
+    username: ${MAIL_USERNAME:mounir.abhari@capgemini.com}
     password: ${MAIL_PASSWORD:}
     properties:
       mail:
@@ -36,9 +36,10 @@ spring:
           auth: true
           starttls:
             enable: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
+            required: true
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
           ssl:
             protocol: TLSv1.2
         debug: false
