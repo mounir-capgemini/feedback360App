@@ -1,4 +1,10 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.maven.enabled": true,
+    "java.project.sourcePaths": [
+        "feedback360-backend/src/main/java",
+        "feedback360-backend/src/test/java"
+    ],
+    "java.project.outputPath": "feedback360-backend/target/classes"
 }
