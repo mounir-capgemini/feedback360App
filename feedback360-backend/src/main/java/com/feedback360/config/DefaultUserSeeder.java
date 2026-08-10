@@ -2,7 +2,9 @@ package com.feedback360.config;
 
 import com.feedback360.entity.*;
 import com.feedback360.repository.*;
+import com.feedback360.service.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,10 +21,51 @@ public class DefaultUserSeeder implements ApplicationRunner {
     private final SuiviFeedbackRepository suiviFeedbackRepository;
     private final NotificationRepository notificationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+
+    @Value("${app.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
 
     @Override
     @SuppressWarnings("null")
     public void run(org.springframework.boot.ApplicationArguments args) {
+        // Participant principal Capgemini : mounir.abhari@capgemini.com
+        if (!userRepository.existsByEmail("mounir.abhari@capgemini.com")) {
+            User mounirUser = User.builder()
+                    .fullName("Mounir Abhari")
+                    .email("mounir.abhari@capgemini.com")
+                    .password(passwordEncoder.encode("mounir123"))
+                    .role(Role.PARTICIPANT)
+                    .build();
+
+            User savedMounir = userRepository.save(mounirUser);
+
+            Optional<TrainingSession> sessionOpt = trainingSessionRepository.findByTalentUpModuleId(192L)
+                    .or(() -> trainingSessionRepository.findByNameContainingIgnoreCase("Angular").stream().findFirst());
+
+            if (sessionOpt.isPresent()) {
+                TrainingSession session = sessionOpt.get();
+
+                SuiviFeedback suivi = SuiviFeedback.builder()
+                        .user(savedMounir)
+                        .trainingSession(session)
+                        .status(FeedbackStatus.EN_ATTENTE)
+                        .build();
+                suiviFeedbackRepository.save(suivi);
+
+                Notification notification = Notification.builder()
+                        .user(savedMounir)
+                        .message("Nouveau feedback demandé pour la session : " + session.getName())
+                        .type(NotificationType.FEEDBACK_REQUEST)
+                        .status(NotificationStatus.PENDING)
+                        .build();
+                notificationRepository.save(notification);
+
+                // Envoi automatique de l'email TalentUp à mounir.abhari@capgemini.com avec le lien vers la page de login
+                String loginLink = frontendUrl + "/login";
+                emailService.sendTalentUpInvitationEmail(savedMounir, session, loginLink);
+            }
+        }
         if (!userRepository.existsByEmail("admin@feedback360.com")) {
             User admin = User.builder()
                     .fullName("Administrator")
