@@ -26,7 +26,7 @@ spring:
     baseline-on-migrate: true
 
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
+    host: ${MAIL_HOST:smtp-mail.outlook.com}
     port: ${MAIL_PORT:587}
     username: ${MAIL_USERNAME:feedback360.app@gmail.com}
     password: ${MAIL_PASSWORD:}
@@ -36,6 +36,11 @@ spring:
           auth: true
           starttls:
             enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          ssl:
+            protocol: TLSv1.2
         debug: false
 
 # JWT Configuration

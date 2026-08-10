@@ -18,8 +18,8 @@ export const feedbackService = {
     return response.data;
   },
 
-  getAllFeedbacks: async (page = 0, size = 10) => {
-    const params = { page, size };
+  getAllFeedbacks: async (page = 0, size = 10, filters = {}) => {
+    const params = { page, size, ...filters };
     const response = await api.get('/api/feedback/all', { params });
     return response.data;
   },

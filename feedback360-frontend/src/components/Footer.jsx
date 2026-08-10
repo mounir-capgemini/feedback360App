@@ -23,13 +23,12 @@ const Footer = ({ dark = true }) => {
     <Box
       component="footer"
       sx={{
-        bgcolor: dark ? '#0f172a' : '#ffffff',
+        bgcolor: dark ? '#0f172a' : '#f8fafc',
         color: dark ? '#94a3b8' : '#64748b',
-        pt: 6,
+        pt: { xs: 6, md: 8 },
         pb: 4,
         mt: 'auto',
-        borderTop: dark ? '1px solid #1e293b' : '1px solid rgba(59, 130, 246, 0.15)',
-        boxShadow: dark ? 'none' : '0 -2px 10px rgba(15, 23, 42, 0.03)',
+        borderTop: dark ? '1px solid #1e293b' : '1px solid rgba(226, 232, 240, 0.8)',
       }}
     >
       <Container maxWidth="lg">
@@ -164,7 +163,7 @@ const Footer = ({ dark = true }) => {
                   color: dark ? '#94a3b8' : '#64748b',
                   fontSize: '0.875rem',
                   textTransform: 'none',
-                  justify: 'flex-start',
+                  justifyContent: 'flex-start',
                   width: 'fit-content',
                   '&:hover': { color: '#3b82f6', bgcolor: 'transparent' }
                 }}

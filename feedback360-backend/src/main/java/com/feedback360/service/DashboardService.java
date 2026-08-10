@@ -30,7 +30,7 @@ public class DashboardService {
     /**
      * Calcule les statistiques globales pour le dashboard admin.
      */
-    public DashboardStatsDTO getStatistics() {
+    public DashboardStatsDTO getStatistics(String userName, String trainingName, FeedbackStatus status) {
         DashboardStatsDTO stats = new DashboardStatsDTO();
 
         try {
@@ -112,7 +112,7 @@ public class DashboardService {
 
             List<DashboardStatsDTO.UserTrainingProgress> trainingProgress = new ArrayList<>();
             try {
-                List<com.feedback360.entity.SuiviFeedback> suivis = suiviFeedbackRepository.findAll();
+                List<com.feedback360.entity.SuiviFeedback> suivis = suiviFeedbackRepository.search(userName, trainingName, status);
                 for (com.feedback360.entity.SuiviFeedback suivi : suivis) {
                     if (suivi.getUser() == null || suivi.getTrainingSession() == null) {
                         continue;

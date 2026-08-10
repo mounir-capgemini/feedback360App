@@ -88,10 +88,8 @@ body {
   transform: translateY(-2px);
 }
 
-.email-footer {
-  background: #f5f5f5;
-  padding: 18px;
-  text-align: center;
-  color: #666;
+.email-note {
   font-size: 14px;
+  color: #888;
+  margin-top: 10px;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import './TalentUpEmail.css';
 
@@ -7,22 +7,25 @@ import './TalentUpEmail.css';
  * ============================================================================
  * PAGE : TalentUpEmailPage (Page Email de Fin de Formation)
  * ============================================================================
- * Rôle : Page affichée après qu'un participant clique sur le lien "OK"
- *        dans l'email reçu de TalentUp/Feedback360.
- * 
+ * Rôle : Page affichée après qu'un participant clique sur le lien
+ *        dans l'email d'invitation TalentUp/Feedback360.
+ *
  * Fonctionnalités clés :
- * - Affiche un récapitulatif de la formation terminée.
- * - Bouton "OK" : redirige vers le dashboard participant si authentifié,
- *   sinon vers la page de connexion (qui redirigera ensuite vers le dashboard).
+ * - Affiche un récapitulatif de la création du compte.
+ * - Affiche les informations de connexion (email + mot de passe par défaut).
+ * - Bouton "Accéder à mon compte" : redirige vers le dashboard si authentifié,
+ *   sinon vers la page de connexion.
  * ============================================================================
  */
 const TalentUpEmailPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const [searchParams] = useSearchParams();
+  const userEmail = searchParams.get('email');
+
+  const DEFAULT_PASSWORD = 'TalentUp2024!';
 
   const handleClick = () => {
-    // Si l'utilisateur est déjà connecté → dashboard participant
-    // Sinon → page de connexion (redirigera vers le dashboard après login)
     if (isAuthenticated()) {
       navigate('/dashboard', { replace: true });
     } else {
@@ -38,39 +41,41 @@ const TalentUpEmailPage = () => {
       <div className="email-card">
         <div className="email-header">
           <div className="logo">
-            🎓 <span>TALENTUP</span>
+            🎓 <span>FEEDBACK360</span>
           </div>
         </div>
 
         <div className="email-body">
-          <h2>
-            Votre formation est terminée <span>✅</span>
-          </h2>
+          <h2>Bonjour,</h2>
+
+          <p className="message">
+            Un compte Feedback360 vient d'être créé pour vous.
+          </p>
+
+          <p className="message">
+            Pour vous connecter, utilisez les informations suivantes&nbsp;:
+          </p>
 
           <div className="formation-box">
             <p>
-              <strong>Formation :</strong> Angular Fundamentals
+              <strong>Email :</strong> {userEmail || 'Votre adresse email TalentUp'}
             </p>
             <p>
-              <strong>Date :</strong> 10/07/2026
+              <strong>Mot de passe :</strong> {DEFAULT_PASSWORD}
             </p>
           </div>
 
-          <p className="message">
-            Votre avis nous intéresse.
-          </p>
-
-          <p className="message">
-            Merci de compléter votre évaluation afin d'améliorer la qualité de nos formations.
-          </p>
-
           <button className="btn-feedback" onClick={handleClick}>
-            OK
+            Accéder à mon compte
           </button>
+
+          <div className="message email-note">
+            Ce lien est valable pendant 24 heures.
+          </div>
         </div>
 
         <div className="email-footer">
-          Équipe TalentUp & Feedback360
+          Équipe Feedback360
         </div>
       </div>
     </div>

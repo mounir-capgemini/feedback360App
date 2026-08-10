@@ -79,9 +79,9 @@ public class FeedbackService {
     /**
      * Récupère tous les feedbacks (Admin uniquement).
      */
-    public Page<FeedbackDTO> getAllFeedbacks(Pageable pageable) {
+    public Page<FeedbackDTO> getAllFeedbacks(String participant, String session, Pageable pageable) {
         Pageable safePageable = Objects.requireNonNull(pageable, "Pageable must not be null");
-        return feedbackRepository.findAll(safePageable).map(feedbackMapper::toDTO);
+        return feedbackRepository.search(participant, session, safePageable).map(feedbackMapper::toDTO);
     }
 
     /**

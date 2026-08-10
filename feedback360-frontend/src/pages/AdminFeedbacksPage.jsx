@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { feedbackService } from '../services/feedbackService';
 import {
   Box,
@@ -128,19 +128,15 @@ const AdminFeedbacksPage = () => {
     const fetchFeedbacks = async () => {
       setLoading(true);
       try {
-        const data = await feedbackService.getAllFeedbacks(page, rowsPerPage);
+        const data = await feedbackService.getAllFeedbacks(page, rowsPerPage, {
+          participant: searchParticipant || undefined,
+          session: searchSession || undefined,
+        });
         const apiFeedbacks = data.content || [];
 
         // Combiner avec les exemples de la page Home s'ils ne sont pas déjà inclus
-        const existingIds = new Set(apiFeedbacks.map(f => f.id));
-        const missingSamples = sampleAdminFeedbacks.filter(s => !existingIds.has(s.id));
-        const combined = [...apiFeedbacks, ...missingSamples].map((item) => ({
-          ...item,
-          sessionName: 'Angular Fundamentals',
-        }));
-
-        setFeedbacks(combined);
-        setTotalElements((data.totalElements || apiFeedbacks.length) + missingSamples.length);
+        setFeedbacks(apiFeedbacks);
+        setTotalElements(data.totalElements || 0);
       } catch (err) {
         console.error(err);
         setFeedbacks(sampleAdminFeedbacks);
@@ -151,7 +147,7 @@ const AdminFeedbacksPage = () => {
     };
 
     fetchFeedbacks();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, searchParticipant, searchSession]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -161,26 +157,6 @@ const AdminFeedbacksPage = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  const filteredFeedbacks = useMemo(() => {
-    const participantQuery = searchParticipant.trim().toLowerCase();
-    const sessionQuery = searchSession.trim().toLowerCase();
-
-    return feedbacks.filter((fb) => {
-      const matchesParticipant = (fb.userName || '').toLowerCase().includes(participantQuery);
-      const matchesSession = (fb.sessionName || '').toLowerCase().includes(sessionQuery);
-      return matchesParticipant && matchesSession;
-    });
-  }, [feedbacks, searchParticipant, searchSession]);
-
-  const pagedFeedbacks = useMemo(() => {
-    const startIndex = page * rowsPerPage;
-    return filteredFeedbacks.slice(startIndex, startIndex + rowsPerPage);
-  }, [filteredFeedbacks, page, rowsPerPage]);
-
-  useEffect(() => {
-    setTotalElements(filteredFeedbacks.length);
-  }, [filteredFeedbacks]);
 
   const getInitials = (name) => {
     if (!name) return 'U';
@@ -267,7 +243,7 @@ const AdminFeedbacksPage = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {pagedFeedbacks.map((fb) => (
+                  {feedbacks.map((fb) => (
                     <TableRow key={fb.id} hover sx={{ '&:last-child cell': { border: 0 } }}>
                       <TableCell sx={{ fontWeight: 500 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>

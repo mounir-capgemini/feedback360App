@@ -7,11 +7,17 @@
 
   color-scheme: light;
   color: #0f172a;
-  background-color: #ffffff;
+  background-color: #f8fafc;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* Glow & Hero Effects */
@@ -60,6 +66,7 @@
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 24px;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 

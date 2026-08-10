@@ -178,9 +178,9 @@ public class AuthService {
     /**
      * Récupère la liste de tous les utilisateurs (pour l'admin).
      */
-    public Page<UserDTO> getAllUsers(@NonNull Pageable pageable) {
+    public Page<UserDTO> getAllUsers(String search, Role role, @NonNull Pageable pageable) {
         Pageable safePageable = Objects.requireNonNull(pageable, "Pageable must not be null");
-        return userRepository.findAll(safePageable).map(userMapper::toDTO);
+        return userRepository.search(search, role, safePageable).map(userMapper::toDTO);
     }
 
     @Transactional

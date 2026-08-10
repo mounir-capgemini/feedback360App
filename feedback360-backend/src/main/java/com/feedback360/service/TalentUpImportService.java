@@ -5,6 +5,7 @@ import com.feedback360.entity.*;
 import com.feedback360.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class TalentUpImportService {
     private final NotificationRepository notificationRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+
+    @Value("${app.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
 
     private static <T> T requireNonNull(@Nullable T object, String message) {
         return Objects.requireNonNull(object, message);
@@ -143,8 +147,9 @@ public class TalentUpImportService {
         notificationRepository.save(safeNotification);
         result.put("notificationId", Objects.requireNonNull(notification.getId(), "Notification id ne peut pas être null"));
 
-        // 7. Envoyer l'email de demande de feedback au participant
-        emailService.sendFeedbackRequestEmail(user, session);
+        // 7. Envoyer l'email d'invitation TalentUp au participant
+        String invitationLink = frontendUrl + "/email/feedback?email=" + user.getEmail();
+        emailService.sendTalentUpInvitationEmail(user, session, invitationLink);
         result.put("emailSent", true);
 
         result.put("status", "SUCCESS");

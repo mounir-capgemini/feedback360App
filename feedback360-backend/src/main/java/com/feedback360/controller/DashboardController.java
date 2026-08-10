@@ -3,6 +3,7 @@ package com.feedback360.controller;
 import com.feedback360.dto.DashboardStatsDTO;
 import com.feedback360.dto.ParticipantDashboardStatsDTO;
 import com.feedback360.entity.User;
+import com.feedback360.entity.FeedbackStatus;
 import com.feedback360.service.AuthService;
 import com.feedback360.service.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,8 +29,11 @@ public class DashboardController {
     @GetMapping("/statistics")
     @PreAuthorize("hasAnyRole('ADMIN', 'GESTIONNAIRE')")
     @Operation(summary = "Statistiques globales du dashboard")
-    public ResponseEntity<DashboardStatsDTO> getStatistics() {
-        return ResponseEntity.ok(dashboardService.getStatistics());
+    public ResponseEntity<DashboardStatsDTO> getStatistics(
+            @RequestParam(required = false) String userName,
+            @RequestParam(required = false) String trainingName,
+            @RequestParam(required = false) FeedbackStatus status) {
+        return ResponseEntity.ok(dashboardService.getStatistics(userName, trainingName, status));
     }
 
     @GetMapping("/participant")
