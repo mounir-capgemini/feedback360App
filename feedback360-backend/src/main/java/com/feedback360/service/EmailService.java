@@ -59,7 +59,7 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("Email de feedback envoyé à : {}", user.getEmail());
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("Erreur lors de l'envoi de l'email à {} : {}", user.getEmail(), e.getMessage());
         }
     }
@@ -89,8 +89,8 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("Invitation email sent to {}", user.getEmail());
-        } catch (MessagingException e) {
-            log.error("Error sending invitation email to {}", user.getEmail(), e);
+        } catch (Exception e) {
+            log.error("Error sending invitation email to {} : {}", user.getEmail(), e.getMessage());
         }
     }
 

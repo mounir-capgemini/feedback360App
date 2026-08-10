@@ -3,6 +3,7 @@ package com.feedback360.config;
 import com.feedback360.entity.*;
 import com.feedback360.repository.*;
 import com.feedback360.service.EmailService;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DefaultUserSeeder implements ApplicationRunner {
 
     private final UserRepository userRepository;
@@ -66,9 +68,14 @@ public class DefaultUserSeeder implements ApplicationRunner {
                 notificationRepository.save(notification);
             }
 
-            // Toujours envoyer l'email TalentUp à mounir.abhari@capgemini.com à chaque relance de l'application
-            String loginLink = frontendUrl + "/login";
-            emailService.sendTalentUpInvitationEmail(mounirUser, session, loginLink);
+            // Toujours tenter d'envoyer l'email TalentUp à mounir.abhari@capgemini.com à chaque relance de l'application
+            try {
+                String loginLink = frontendUrl + "/login";
+                emailService.sendTalentUpInvitationEmail(mounirUser, session, loginLink);
+                log.info("Email TalentUp initialisé pour {}", mounirUser.getEmail());
+            } catch (Exception e) {
+                log.warn("Impossible d'envoyer l'email TalentUp au démarrage : {}", e.getMessage());
+            }
         }
         if (!userRepository.existsByEmail("admin@feedback360.com")) {
             User admin = User.builder()
