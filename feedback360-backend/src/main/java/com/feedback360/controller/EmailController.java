@@ -2,6 +2,7 @@ package com.feedback360.controller;
 
 import com.feedback360.entity.TrainingSession;
 import com.feedback360.entity.User;
+import com.feedback360.repository.SuiviFeedbackRepository;
 import com.feedback360.repository.TrainingSessionRepository;
 import com.feedback360.repository.UserRepository;
 import com.feedback360.service.EmailService;
@@ -54,6 +55,8 @@ public class EmailController {
         ));
     }
 
+    private final SuiviFeedbackRepository suiviFeedbackRepository;
+
     @PostMapping("/send-talentup-invitation")
     @Operation(summary = "Envoyer une invitation TalentUp",
                description = "Envoie un email de création de compte au participant TalentUp")
@@ -73,6 +76,34 @@ public class EmailController {
         return ResponseEntity.ok(Map.of(
                 "status", "SUCCESS",
                 "message", "Email d'invitation TalentUp envoyé à " + user.getEmail()
+        ));
+    }
+
+    @PostMapping("/send-angular-emails")
+    @Operation(summary = "Envoyer les emails TalentUp aux apprenants Angular",
+               description = "Envoie automatiquement les emails d'invitation et de feedback à tous les apprenants ayant finalisé la formation Angular Fundamentals")
+    public ResponseEntity<Map<String, Object>> sendAngularEmails() {
+        TrainingSession angularSession = trainingSessionRepository.findByTalentUpModuleId(192L)
+                .or(() -> trainingSessionRepository.findByNameContainingIgnoreCase("Angular").stream().findFirst())
+                .orElseThrow(() -> new RuntimeException("Session Angular Fundamentals introuvable."));
+
+        var suivis = suiviFeedbackRepository.findByTrainingSessionId(angularSession.getId());
+        int sentCount = 0;
+
+        for (var suivi : suivis) {
+            User user = suivi.getUser();
+            if (user != null && user.getEmail() != null) {
+                String invitationLink = frontendUrl + "/login";
+                emailService.sendTalentUpInvitationEmail(user, angularSession, invitationLink);
+                sentCount++;
+            }
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "status", "SUCCESS",
+                "session", angularSession.getName(),
+                "emailsSentCount", sentCount,
+                "message", sentCount + " email(s) TalentUp envoyé(s) avec succès pour la formation Angular Fundamentals."
         ));
     }
 }
