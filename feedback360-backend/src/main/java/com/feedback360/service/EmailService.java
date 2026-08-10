@@ -9,7 +9,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 import java.util.Objects;
@@ -81,10 +80,13 @@ public class EmailService {
 
             String sender = Objects.requireNonNull(fromEmail, "Sender email must not be null");
             helper.setFrom(sender);
-            helper.setTo(user.getEmail());
+            helper.setTo(Objects.requireNonNull(user.getEmail(), "Recipient email must not be null"));
             helper.setSubject("Un compte Feedback360 vient d'être créé pour vous");
 
-            String htmlContent = buildTalentUpInvitationHtml(user, session, link, DEFAULT_PASSWORD);
+            String htmlContent = Objects.requireNonNull(
+                    buildTalentUpInvitationHtml(user, session, link, DEFAULT_PASSWORD),
+                    "Invitation email content must not be null"
+            );
             helper.setText(htmlContent, true);
 
             mailSender.send(message);
