@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { userService } from '../services/userService';
 import {
   Box,
@@ -46,7 +46,7 @@ import { AccountCircle, PersonAdd as PersonAddIcon } from '@mui/icons-material';
  * ============================================================================
  */
 const AdminUsersPage = () => {
-  const [allUsers, setAllUsers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -62,7 +62,8 @@ const AdminUsersPage = () => {
 
   // Filtres
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState('ADMIN');
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('ALL');
 
   // Pagination
   const [page, setPage] = useState(0);
@@ -70,12 +71,14 @@ const AdminUsersPage = () => {
   const [totalElements, setTotalElements] = useState(0);
 
   const fetchUsers = async () => {
-    setLoading(true);
     try {
-      const data = await userService.getAllUsers(0, 1000);
-      const users = data.content || [];
-      setAllUsers(users);
-      setTotalElements(users.length);
+      const data = await userService.getAllUsers(page, rowsPerPage, {
+        search: appliedSearchTerm || undefined,
+        role: roleFilter === 'ALL' ? undefined : roleFilter,
+      });
+      setUsers(data.content || []);
+      setTotalElements(data.totalElements || 0);
+      setError('');
     } catch (err) {
       console.error(err);
       setError('Impossible de charger la liste des utilisateurs.');
@@ -86,31 +89,11 @@ const AdminUsersPage = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [page, rowsPerPage, appliedSearchTerm, roleFilter]);
 
   useEffect(() => {
     setPage(0);
-  }, [searchTerm, roleFilter]);
-
-  const filteredUsers = useMemo(() => {
-    const query = searchTerm.trim().toLowerCase();
-
-    return allUsers.filter((user) => {
-      const fullName = (user.fullName || '').toLowerCase();
-      const matchesName = fullName.includes(query);
-      const matchesRole = roleFilter === 'ALL' || user.role === roleFilter;
-      return matchesName && matchesRole;
-    });
-  }, [allUsers, searchTerm, roleFilter]);
-
-  useEffect(() => {
-    setTotalElements(filteredUsers.length);
-  }, [filteredUsers]);
-
-  const pagedUsers = useMemo(() => {
-    const startIndex = page * rowsPerPage;
-    return filteredUsers.slice(startIndex, startIndex + rowsPerPage);
-  }, [filteredUsers, page, rowsPerPage]);
+  }, [roleFilter]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -118,6 +101,11 @@ const AdminUsersPage = () => {
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleSearch = () => {
+    setAppliedSearchTerm(searchTerm.trim());
     setPage(0);
   };
 
@@ -213,8 +201,16 @@ const AdminUsersPage = () => {
                   size="small"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
                   sx={{ minWidth: { xs: '100%', sm: 260 } }}
                 />
+                <Button variant="contained" onClick={handleSearch}>
+                  Rechercher
+                </Button>
                 <FormControl size="small" sx={{ minWidth: 180 }}>
                   <InputLabel id="role-filter-label">Filtrer par rôle</InputLabel>
                   <Select
@@ -245,7 +241,7 @@ const AdminUsersPage = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {pagedUsers.map((u) => (
+                  {users.map((u) => (
                     <TableRow key={u.id} hover sx={{ '&:last-child cell': { border: 0 } }}>
                       <TableCell>
                         <Avatar

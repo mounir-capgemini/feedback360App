@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Card, CardContent, Typography, CircularProgress, Alert, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, LinearProgress, Chip, TextField, InputAdornment } from '@mui/material';
+import { Box, Grid, Card, CardContent, Typography, CircularProgress, Alert, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, LinearProgress, Chip, TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { People as PeopleIcon, School as SchoolIcon, RateReview as ReviewIcon, Star as StarIcon, Search as SearchIcon } from '@mui/icons-material';
 import { dashboardService } from '../services/dashboardService';
 import { Bar, Pie, Line } from 'react-chartjs-2';
@@ -89,11 +89,17 @@ const DashboardAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [trainingName, setTrainingName] = useState('');
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const data = await dashboardService.getStatistics();
+        const data = await dashboardService.getStatistics({
+          userName: searchQuery || undefined,
+          trainingName: trainingName || undefined,
+          status: status || undefined,
+        });
         setStats(data);
       } catch (err) {
         console.error(err);
@@ -104,7 +110,7 @@ const DashboardAdmin = () => {
       }
     };
     fetchStats();
-  }, []);
+  }, [searchQuery, trainingName, status]);
 
   if (loading) {
     return (
@@ -250,15 +256,11 @@ const DashboardAdmin = () => {
   ];
 
   // === Tableau de suivi des formations ===
-  const allTrainingRows = Array.isArray(stats.userTrainingProgress) && stats.userTrainingProgress.length > 0
+  const allTrainingRows = Array.isArray(stats.userTrainingProgress)
     ? stats.userTrainingProgress
-    : FALLBACK_STATS.userTrainingProgress;
+    : [];
 
-  const trainingRows = searchQuery.trim()
-    ? allTrainingRows.filter((row) =>
-        row.userName.toLowerCase().includes(searchQuery.trim().toLowerCase())
-      )
-    : allTrainingRows;
+  const trainingRows = allTrainingRows;
 
   return (
     <Box className="animate-fade-in" sx={{ color: '#0f172a' }}>
@@ -327,6 +329,7 @@ const DashboardAdmin = () => {
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             Suivi des formations des utilisateurs
           </Typography>
+          <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
           <TextField
             id="suivi-search-input"
             size="small"
@@ -341,7 +344,7 @@ const DashboardAdmin = () => {
               ),
             }}
             sx={{
-              minWidth: 240,
+              minWidth: 220,
               '& .MuiOutlinedInput-root': {
                 borderRadius: 3,
                 background: 'rgba(99,102,241,0.06)',
@@ -350,6 +353,16 @@ const DashboardAdmin = () => {
               },
             }}
           />
+          <TextField size="small" placeholder="Rechercher une formation..." value={trainingName} onChange={(e) => setTrainingName(e.target.value)} sx={{ minWidth: 220 }} />
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel id="progress-status-label">Statut</InputLabel>
+            <Select labelId="progress-status-label" value={status} label="Statut" onChange={(e) => setStatus(e.target.value)}>
+              <MenuItem value="">Tous</MenuItem>
+              <MenuItem value="EN_ATTENTE">En cours</MenuItem>
+              <MenuItem value="SOUMIS">TerminÃ©</MenuItem>
+            </Select>
+          </FormControl>
+          </Box>
         </Box>
         <TableContainer>
           <Table size="small">

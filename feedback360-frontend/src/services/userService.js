@@ -4,8 +4,8 @@ export const userService = {
   /**
    * Récupère la liste de tous les utilisateurs (admin uniquement).
    */
-  getAllUsers: async (page = 0, size = 10) => {
-    const response = await api.get('/api/users', { params: { page, size } });
+  getAllUsers: async (page = 0, size = 10, filters = {}) => {
+    const response = await api.get('/api/users', { params: { page, size, ...filters } });
     return response.data;
   },
 

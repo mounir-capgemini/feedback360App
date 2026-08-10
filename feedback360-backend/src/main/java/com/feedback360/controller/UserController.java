@@ -4,6 +4,7 @@ import com.feedback360.dto.ProfileUpdateDTO;
 import com.feedback360.dto.UserAdminUpdateDTO;
 import com.feedback360.dto.UserDTO;
 import com.feedback360.entity.User;
+import com.feedback360.entity.Role;
 import com.feedback360.mapper.UserMapper;
 import com.feedback360.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,13 +38,15 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Role role) {
 
         Sort sort = sortDir.equalsIgnoreCase("asc") ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return ResponseEntity.ok(authService.getAllUsers(pageable));
+        return ResponseEntity.ok(authService.getAllUsers(search, role, pageable));
     }
 
     @GetMapping("/profile")
