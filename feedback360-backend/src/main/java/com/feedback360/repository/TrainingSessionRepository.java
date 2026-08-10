@@ -17,6 +17,8 @@ public interface TrainingSessionRepository extends JpaRepository<TrainingSession
 
     Optional<TrainingSession> findByTalentUpModuleId(Long talentUpModuleId);
 
+    java.util.List<TrainingSession> findByNameContainingIgnoreCase(String name);
+
     boolean existsByTalentUpModuleId(Long talentUpModuleId);
 
     @Query("SELECT ts FROM TrainingSession ts WHERE " +

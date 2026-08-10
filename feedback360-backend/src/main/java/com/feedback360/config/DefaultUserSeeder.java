@@ -99,9 +99,9 @@ public class DefaultUserSeeder implements ApplicationRunner {
             User savedParticipant = userRepository.save(participant);
 
             // Associer à la session Angular Fundamentals (ID 192 de TalentUp)
-            Optional<TrainingSession> sessionOpt = trainingSessionRepository.findByTalentUpModuleId(192L);
-            if (sessionOpt.isPresent()) {
-                TrainingSession session = sessionOpt.get();
+            Optional<TrainingSession> participantSessionOpt = trainingSessionRepository.findByTalentUpModuleId(192L);
+            if (participantSessionOpt.isPresent()) {
+                TrainingSession session = participantSessionOpt.get();
                 if (!suiviFeedbackRepository.findByUserIdAndTrainingSessionId(savedParticipant.getId(), session.getId()).isPresent()) {
                     SuiviFeedback suivi = SuiviFeedback.builder()
                             .user(savedParticipant)
@@ -110,7 +110,7 @@ public class DefaultUserSeeder implements ApplicationRunner {
                             .build();
                     suiviFeedbackRepository.save(suivi);
                 }
-                
+
                 // Créer une notification pour le participant si elle n'existe pas
                 if (notificationRepository.findByUserIdAndType(savedParticipant.getId(), NotificationType.FEEDBACK_REQUEST).isEmpty()) {
                     Notification notification = Notification.builder()
